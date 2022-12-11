@@ -65,13 +65,32 @@ void Game::ProcessInput()
     }
 }
 
+glm::vec2 playerPosition;
+glm::vec2 playerVelocity;
+
+// Initialize game objects...
 void Game::Setup() {
-    // Todo: Initialize game objects...
+    playerPosition = glm::vec2(10.0, 20.0);
+    playerVelocity = glm::vec2(100.0, 0.0);
 }
 
+// Update game object
 void Game::Update()
 {
-    // Todo: Update game object...
+    // Wait until time has passed MILLISECS_PER_FRAME & fixing the PFS
+    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
+    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
+        SDL_Delay(timeToWait);
+    }
+
+    // The difference in ticks since the last frame, converted to seconds
+    double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
+
+    // Store the current frame time
+    millisecsPreviousFrame = SDL_GetTicks(); // millisecond
+
+    playerPosition.x += playerVelocity.x * deltaTime;
+    playerPosition.y += playerVelocity.y * deltaTime;
 }
 
 void Game::Render()
@@ -85,7 +104,12 @@ void Game::Render()
     SDL_FreeSurface(surface);
 
     // The destination rect to place texture
-    SDL_Rect dstRect = {10, 10, 32, 32};
+    SDL_Rect dstRect = {
+        static_cast<int>(playerPosition.x),
+        static_cast<int>(playerPosition.y),
+        32,
+        32
+    };
     SDL_RenderCopy(renderer, texture, NULL, &dstRect);
     SDL_DestroyTexture(texture);
 
@@ -95,6 +119,7 @@ void Game::Render()
 void Game::Run()
 {
     Setup();
+    // Todo: Fix the time step
     while (isRunning)
     {
         ProcessInput();

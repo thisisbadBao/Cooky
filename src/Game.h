@@ -4,26 +4,32 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <SDL2/SDL_image.h>
+#include <glm/glm.hpp>
 
-class Game {
-    private:
-        bool isRunning;
-        SDL_Window* window;
-        SDL_Renderer* renderer;
+const int FPS = 60;
+const int MILLISECS_PER_FRAME = 1000 / FPS;
 
-    public:
-        Game();
-        ~Game();
-        void Initialize();
-        void Setup();
-        void ProcessInput();
-        void Update();
-        void Render();
-        void Run();
-        void Destroy();
+class Game
+{
+private:
+    bool isRunning;
+    int millisecsPreviousFrame = 0;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
 
-        int windowWidth;
-        int windowHeight;
+public:
+    Game();
+    ~Game();
+    void Initialize();
+    void Setup();
+    void ProcessInput();
+    void Update();
+    void Render();
+    void Run();
+    void Destroy();
+
+    int windowWidth;
+    int windowHeight;
 };
 
 #endif
