@@ -1,5 +1,4 @@
 #include "Game.h"
-#include <iostream>
 
 Game::Game()
 {
@@ -18,13 +17,16 @@ void Game::Initialize()
         std::cerr << "Error initializing SDL." << std::endl;
         return;
     }
-
+    SDL_DisplayMode displayMode;
+    SDL_GetCurrentDisplayMode(0, &displayMode);
+    windowWidth = 800;//displayMode.w;
+    windowHeight = 600;//displayMode.h;
     window = SDL_CreateWindow(
         NULL,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        800,
-        600,
+        windowWidth,
+        windowHeight,
         SDL_WINDOW_BORDERLESS
     );
     if (!window) {
@@ -32,22 +34,18 @@ void Game::Initialize()
         return;
     }
 
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    renderer = SDL_CreateRenderer(
+        window, 
+        -1,
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
+    );
     if (!renderer) {
         std::cerr << "Error creating SDL renderer." << std::endl;
         return;
     }
 
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     isRunning = true;
-}
-
-void Game::Run()
-{
-    while (isRunning) {
-        ProcessInput();
-        Update();
-        Render();
-    }
 }
 
 void Game::ProcessInput()
@@ -67,6 +65,10 @@ void Game::ProcessInput()
     }
 }
 
+void Game::Setup() {
+    // Todo: Initialize game objects...
+}
+
 void Game::Update()
 {
     // Todo: Update game object...
@@ -77,9 +79,28 @@ void Game::Render()
     SDL_SetRenderDrawColor(renderer, 176, 202, 113, 255);
     SDL_RenderClear(renderer);
 
-    // Todo: Render all game objects...
+    // Draw a PNG texture
+    SDL_Surface* surface = IMG_Load("./assets/images/tank-tiger-right.png");
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
 
-    SDL_RenderPresent(renderer);
+    // The destination rect to place texture
+    SDL_Rect dstRect = {10, 10, 32, 32};
+    SDL_RenderCopy(renderer, texture, NULL, &dstRect);
+    SDL_DestroyTexture(texture);
+
+    SDL_RenderPresent(renderer); // Swap the buffer
+}
+
+void Game::Run()
+{
+    Setup();
+    while (isRunning)
+    {
+        ProcessInput();
+        Update();
+        Render();
+    }
 }
 
 void Game::Destroy()
