@@ -3,18 +3,18 @@
 Game::Game()
 {
     isRunning = false;
-    std::cout << "Game constructor called!" << std::endl;
+    Logger::Log("Game constructor called!");
 }
 
 Game::~Game()
 {
-    std::cout << "Game destructor called!" << std::endl;
+    Logger::Log("Game destructor called!");
 }
 
 void Game::Initialize()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        std::cerr << "Error initializing SDL." << std::endl;
+        Logger::Err("Error initializing SDL.");
         return;
     }
     SDL_DisplayMode displayMode;
@@ -30,7 +30,7 @@ void Game::Initialize()
         SDL_WINDOW_BORDERLESS
     );
     if (!window) {
-        std::cerr << "Error creating SDL window." << std::endl;
+        Logger::Err("Error creating SDL window.");
         return;
     }
 
@@ -40,7 +40,7 @@ void Game::Initialize()
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
     );
     if (!renderer) {
-        std::cerr << "Error creating SDL renderer." << std::endl;
+        Logger::Err("Error creating SDL renderer.");
         return;
     }
 
