@@ -3,8 +3,7 @@
 
 #include "../ECS/ECS.h"
 
-class MovementSystem: public System
-{
+class MovementSystem: public System {
     public:
         MovementSystem()
         {

@@ -1,18 +1,15 @@
 #include "Game.h"
 
-Game::Game()
-{
+Game::Game() {
     isRunning = false;
     Logger::Log("Game constructor called!");
 }
 
-Game::~Game()
-{
+Game::~Game() {
     Logger::Log("Game destructor called!");
 }
 
-void Game::Initialize()
-{
+void Game::Initialize() {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         Logger::Err("Error initializing SDL.");
         return;
@@ -75,9 +72,8 @@ void Game::Setup() {
 }
 
 // Update game object
-void Game::Update()
-{
-    // Wait until time has passed MILLISECS_PER_FRAME & fixing the PFS
+void Game::Update() {
+    // Wait until time has passed MILLISECS_PER_FRAME & fixing the FPS
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
     if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
         SDL_Delay(timeToWait);
@@ -95,8 +91,7 @@ void Game::Update()
     // DamageSystem.Update();
 }
 
-void Game::Render()
-{
+void Game::Render() {
     SDL_SetRenderDrawColor(renderer, 176, 202, 113, 255);
     SDL_RenderClear(renderer);
 
@@ -105,8 +100,7 @@ void Game::Render()
     SDL_RenderPresent(renderer); // Swap the buffer
 }
 
-void Game::Run()
-{
+void Game::Run() {
     Setup();
     // Todo: Fix the time step
     while (isRunning)
@@ -117,8 +111,7 @@ void Game::Run()
     }
 }
 
-void Game::Destroy()
-{
+void Game::Destroy() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
