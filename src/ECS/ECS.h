@@ -39,6 +39,8 @@ public:
     Entity& operator=(const Entity& other) = default;
     bool operator==(const Entity& other) const { return other.GetId() == id; }
     bool operator!=(const Entity& other) const { return other.GetId() != id; }
+    bool operator>(const Entity& other) const { return other.GetId() > id; }
+    bool operator<(const Entity& other) const { return other.GetId() < id; }
 };
 
 // The system processes entities that contain a specific signature
@@ -108,7 +110,7 @@ public:
     void Update();
 
     Entity CreateEntity();
-    template <typename T, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
+    template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
     template <typename T> void RemoveComponent(Entity entity);
     template <typename T> bool HasComponent(Entity entity) const;
     template <typename T> T& GetComponent(Entity entity) const;
@@ -124,5 +126,58 @@ public:
     // HasSystem()
     // GetSystem()
 };
+
+template <typename TComponent>
+void System::RequireComponent() {
+    const auto componentId = Component<TComponent>::GetId();
+    componentSignature.set(componentId);
+}
+
+template <typename TComponent, typename ...TArgs>
+void Registry::AddComponent(Entity entity, TArgs&& ...args) {
+    const auto componentId = Component<TComponent>::GetId();
+    const auto entityId = entity.GetId();
+
+    if (componentId >= componentPools.size()) {
+        componentPools.resize(componentId + 1, nullptr);
+    }
+
+    // If no pool for TComponent
+    if (!componentPools[componentId]) {
+        Pool<TComponent>* newComponentPool = new Pool<TComponent>();
+        componentPools[componentId] = newComponentPool;
+    }
+
+    // Get the pool for TComponent
+    Pool<TComponent> *componentPool = Pool<TComponent>(componentPools[componentId]);
+
+    if (entityId >= componentPool->GetSize()) {
+        componentPool->Resize(numEntites);
+    }
+
+    // Create a new component
+    TComponent newComponent(std::forward<TArgs>(args)...);
+
+    // Add component to the entity
+    componentPool->Set(entityId, newComponent);
+
+    // To turn on the component for the entity
+    entityComponentSigmatures[entityId].set(componentId);
+}
+
+template <typename T>
+void Registry::RemoveComponent(Entity entity){
+
+}
+
+template <typename T>
+bool Registry::HasComponent(Entity entity) const {
+
+}
+
+template <typename T>
+T& Registry::GetComponent(Entity entity) const {
+
+}
 
 #endif
