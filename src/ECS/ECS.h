@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <typeindex>
+#include <set>
 
 const unsigned int MAX_COMPONENTS = 32;
 
@@ -62,7 +63,7 @@ public:
 class IPool {
 public:
     virtual ~IPool() {}
-}
+};
 
 // A vector of objects of type T
 template <typename T>
@@ -88,6 +89,8 @@ public:
 class Registry {
 private:
     int numEntites = 0;
+    std::set<Entity> entitiesToBeAdded; // Entities will be created in the next Update() in Registry
+    std::set<Entity> entitiesToBeKilled; // Entities will be killed in the next Update() in Registry
 
     // Each pool contains all the data of a certain component
     // vector index = component type id, Ipool index = entity id
@@ -102,14 +105,19 @@ private:
 
 public:
     Registry() = default;
+    void Update();
+
+    Entity CreateEntity();
+    template <typename T, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
+    template <typename T> void RemoveComponent(Entity entity);
+    template <typename T> bool HasComponent(Entity entity) const;
+    template <typename T> T& GetComponent(Entity entity) const;
+
+
+    // void AddEntityToSystem(Entity entity);
 
     // Todo:
-    // CreateEntity();
     // KillEntity()
-    //
-    // AddComponent(Entity entity)
-    // RemoveComponent(Entity entity)
-    // HasComponent(Entity entity)
     //
     // AddSystem()
     // RemoveSystem()
