@@ -100,7 +100,7 @@ private:
 
     // which component is "on" of each entity
     // vector index = entity id
-    std::vector<Signature> entityComponentSigmatures;
+    std::vector<Signature> entityComponentSignatures;
 
     // Map of active system
     std::unordered_map<std::type_index, System*> systems;
@@ -110,27 +110,51 @@ public:
     void Update();
 
     Entity CreateEntity();
+
+    // Component management
     template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
     template <typename T> void RemoveComponent(Entity entity);
     template <typename T> bool HasComponent(Entity entity) const;
     template <typename T> T& GetComponent(Entity entity) const;
 
-
     // void AddEntityToSystem(Entity entity);
 
     // Todo:
     // KillEntity()
-    //
-    // AddSystem()
-    // RemoveSystem()
-    // HasSystem()
-    // GetSystem()
+    
+    // System management
+    template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
+    template <typename TSystem> void RemoveSystem();
+    template <typename TSystem> bool HasSystem() const;
+    template <typename TSystem> TSystem& GetSystem() const;
 };
 
 template <typename TComponent>
 void System::RequireComponent() {
     const auto componentId = Component<TComponent>::GetId();
     componentSignature.set(componentId);
+}
+
+template <typename TSystem, typename ...TArgs> 
+void Registry::AddSystem(TArgs&& ...args) {
+    TSystem* newSystem(new TSystem(std::forward<TArgs>(args)...));
+    systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
+}
+
+template <typename TSystem>
+void Registry::RemoveSystem() {
+    auto system = systems.find(std::type_index(typeid(TSystem)));
+    systems.erase(system);
+}
+
+template <typename TSystem>
+bool Registry::HasSystem() const {
+
+}
+
+template <typename TSystem>
+TSystem& Registry::GetSystem() const{
+    
 }
 
 template <typename TComponent, typename ...TArgs>
@@ -162,17 +186,21 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args) {
     componentPool->Set(entityId, newComponent);
 
     // To turn on the component for the entity
-    entityComponentSigmatures[entityId].set(componentId);
+    entityComponentSignatures[entityId].set(componentId);
 }
 
 template <typename T>
 void Registry::RemoveComponent(Entity entity){
-
+    const auto componentId = Component<T>::GetId();
+    const auto entityId = entity.GetId();
+    entityComponentSignatures[entityId].set(componentId, false);
 }
 
 template <typename T>
 bool Registry::HasComponent(Entity entity) const {
-
+    const auto componentId = Component<T>::GetId();
+    const auto entityId = entity.GetId();
+    return entityComponentSignatures[entityId].test(componentId);
 }
 
 template <typename T>

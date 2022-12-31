@@ -1,6 +1,8 @@
 #include "ECS.h"
 #include "../Logger/Logger.h"
 
+int IComponent::nextId = 0;
+
 int Entity::GetId() const {
     return id;
 }
@@ -25,8 +27,8 @@ const Signature& System::GetComponentSignature() const {
 
 Entity Registry::CreateEntity() {
     int entityId = numEntites++;
-    if (entityId >= entityComponentSigmatures.size()) {
-        entityComponentSigmatures.resize(entityId + 1);
+    if (entityId >= entityComponentSignatures.size()) {
+        entityComponentSignatures.resize(entityId + 1);
     }
     Entity entity(entityId);
     entitiesToBeAdded.insert(entity);
