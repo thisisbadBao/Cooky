@@ -53,5 +53,8 @@ void Registry::AddEntityToSystem(Entity entity) {
 }
 
 void Registry::Update() {
-     
+    for (auto entity : entitiesToBeAdded) {
+        AddEntityToSystem(entity);
+    }
+    entitiesToBeAdded.clear();
 }
