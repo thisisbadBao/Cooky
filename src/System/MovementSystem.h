@@ -4,18 +4,18 @@
 #include "../ECS/ECS.h"
 
 class MovementSystem: public System {
-    public:
-        MovementSystem()
-        {
-            // Todo: 
-            // RequrieComponent<TransformComponent>();
-        }
+public:
+    MovementSystem()
+    {
+        // Todo: 
+        // RequrieComponent<TransformComponent>();
+    }
 
-        void Update() {
-            for (auto entity : GetEntities()) {
-                // Todo:Update entity position based on velocity
-            }
+    void Update() {
+        for (auto entity : GetEntities()) {
+            // Todo:Update entity position based on velocity
         }
+    }
 }
 
 #endif

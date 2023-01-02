@@ -1,5 +1,8 @@
 #include "Game.h"
 
+#include "../ECS/Components/TransformComponent.h"
+#include "../ECS/Components/RigidBodyComponent.h"
+
 Game::Game() {
     isRunning = false;
     registry = std::make_unique<Registry>();
@@ -17,8 +20,8 @@ void Game::Initialize() {
     }
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
-    windowWidth = 800;//displayMode.w;
-    windowHeight = 600;//displayMode.h;
+    windowWidth = displayMode.w;
+    windowHeight = displayMode.h;
     window = SDL_CreateWindow(
         NULL,
         SDL_WINDOWPOS_CENTERED,
@@ -65,12 +68,12 @@ void Game::ProcessInput()
 
 // Initialize game objects...
 void Game::Setup() {
-    // Todo:
     Entity tank = registry->CreateEntity();
-    Entity truck = registry->CreateEntity();
-    // tank.AddComponent<TransformComponent>;
-    // tank.AddComponent<BoxColliderComponent>;
-    // tank.AddComponent<SpriteComponent>("./assets/images/tank.png");
+
+    tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
+    tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 30.0));
+
+    tank.RemoveComponent<TransformComponent>();
 }
 
 // Update game object
@@ -104,7 +107,6 @@ void Game::Render() {
 
 void Game::Run() {
     Setup();
-    // Todo: Fix the time step
     while (isRunning)
     {
         ProcessInput();
