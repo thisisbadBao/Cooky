@@ -4,7 +4,6 @@
 #include "../ECS/ECS.h"
 #include "../ECS/Components/TransformComponent.h"
 #include "../ECS/Components/RigidBodyComponent.h"
-#include "../Logger/Logger.h"
 
 class MovementSystem: public System {
 public:
@@ -22,15 +21,6 @@ public:
 
             transform.position.x += rigidbody.velocity.x * deltaTime;
             transform.position.y += rigidbody.velocity.y * deltaTime;
-
-            Logger::Log(
-                "Entity id = " +
-                std::to_string(entity.GetId()) +
-                " position is now (" +
-                std::to_string(transform.position.x) +
-                ", " +
-                std::to_string(transform.position.y) + ")"
-            );
         }
     }
 };

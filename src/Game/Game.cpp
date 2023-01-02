@@ -2,7 +2,9 @@
 
 #include "../ECS/Components/TransformComponent.h"
 #include "../ECS/Components/RigidBodyComponent.h"
+#include "../ECS/Components/SpriteComponent.h"
 #include "../System/MovementSystem.h"
+#include "../System/RenderSystem.h"
 
 Game::Game() {
     isRunning = false;
@@ -71,11 +73,18 @@ void Game::ProcessInput()
 void Game::Setup() {
     // Add systems
     registry->AddSystem<MovementSystem>();
+    registry->AddSystem<RenderSystem>();
 
+    // Create entities
     Entity tank = registry->CreateEntity();
-
     tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
-    tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 30.0));
+    tank.AddComponent<RigidBodyComponent>(glm::vec2(40.0, 0.0));
+    tank.AddComponent<SpriteComponent>(10, 10);
+
+    Entity truck = registry->CreateEntity();
+    truck.AddComponent<TransformComponent>(glm::vec2(50.0, 100.0), glm::vec2(2.0, 2.0), 0.0);
+    truck.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 50.0));
+    truck.AddComponent<SpriteComponent>(10, 50);
 }
 
 // Update game object
@@ -92,7 +101,7 @@ void Game::Update() {
     // Store the current frame time
     millisecsPreviousFrame = SDL_GetTicks(); // millisecond
 
-    // Ask all the systems to update
+    // Invoke all the systems that need to update
     registry->GetSystem<MovementSystem>().Update(deltaTime);
     // TODO: registry->GetSystem<CollisionSystem>().Update();
 
@@ -104,7 +113,8 @@ void Game::Render() {
     SDL_SetRenderDrawColor(renderer, 176, 202, 113, 255);
     SDL_RenderClear(renderer);
 
-    // Todo: Render game objects...
+    // Invoke all the systems that need to render
+    registry->GetSystem<RenderSystem>().Update(renderer);
 
     SDL_RenderPresent(renderer); // Swap the buffer
 }
