@@ -2,6 +2,7 @@
 
 #include "../ECS/Components/TransformComponent.h"
 #include "../ECS/Components/RigidBodyComponent.h"
+#include "../System/MovementSystem.h"
 
 Game::Game() {
     isRunning = false;
@@ -68,12 +69,13 @@ void Game::ProcessInput()
 
 // Initialize game objects...
 void Game::Setup() {
+    // Add systems
+    registry->AddSystem<MovementSystem>();
+
     Entity tank = registry->CreateEntity();
 
     tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
     tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 30.0));
-
-    tank.RemoveComponent<TransformComponent>();
 }
 
 // Update game object
@@ -90,10 +92,12 @@ void Game::Update() {
     // Store the current frame time
     millisecsPreviousFrame = SDL_GetTicks(); // millisecond
 
-    // Todo:
-    // MovementSystem.Update();
-    // CollisionSystem.Update();
-    // DamageSystem.Update();
+    // Ask all the systems to update
+    registry->GetSystem<MovementSystem>().Update(deltaTime);
+    // TODO: registry->GetSystem<CollisionSystem>().Update();
+
+    // Update registry
+    registry->Update();
 }
 
 void Game::Render() {
