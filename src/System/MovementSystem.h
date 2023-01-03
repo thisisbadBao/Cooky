@@ -2,8 +2,8 @@
 #define MOVEMENTSYSTEM_H
 
 #include "../ECS/ECS.h"
-#include "../ECS/Components/TransformComponent.h"
-#include "../ECS/Components/RigidBodyComponent.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidBodyComponent.h"
 
 class MovementSystem: public System {
 public:
