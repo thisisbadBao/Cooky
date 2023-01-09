@@ -11,9 +11,11 @@
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
+#include "../Components/BoxColliderComponent.h"
 #include "../System/MovementSystem.h"
 #include "../System/RenderSystem.h"
 #include "../System/AnimationSystem.h"
+#include "../System/CollisionSystem.h"
 
 Game::Game() {
     isRunning = false;
@@ -33,15 +35,15 @@ void Game::Initialize() {
     }
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
-    windowWidth = displayMode.w;
-    windowHeight = displayMode.h;
+    windowWidth = 800; // displayMode.w;
+    windowHeight = 600; // displayMode.h;
     window = SDL_CreateWindow(
         NULL,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         windowWidth,
         windowHeight,
-        SDL_WINDOW_BORDERLESS
+        SDL_WINDOW_ALLOW_HIGHDPI
     );
     if (!window) {
         Logger::Err("Error creating SDL window.");
@@ -58,7 +60,7 @@ void Game::Initialize() {
         return;
     }
 
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     isRunning = true;
 }
 
@@ -84,6 +86,7 @@ void Game::LoadLevel(int level) {
     registry->AddSystem<MovementSystem>();
     registry->AddSystem<RenderSystem>();
     registry->AddSystem<AnimationSystem>();
+    registry->AddSystem<CollisionSystem>();
 
     // Add assets
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -129,14 +132,16 @@ void Game::LoadLevel(int level) {
     radar.AddComponent<AnimationComponent>(8, 9, true);
 
     Entity tank = registry->CreateEntity();
-    tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(2.0, 2.0), 0.0);
-    tank.AddComponent<RigidBodyComponent>(glm::vec2(40.0, 0.0));
+    tank.AddComponent<TransformComponent>(glm::vec2(200.0, 10.0), glm::vec2(2.0, 2.0), 0.0);
+    tank.AddComponent<RigidBodyComponent>(glm::vec2(-30.0, 0.0));
     tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 2);
+    tank.AddComponent<BoxColliderComponent>(32, 32);
 
     Entity truck = registry->CreateEntity();
-    truck.AddComponent<TransformComponent>(glm::vec2(10.0, 50.0), glm::vec2(3.0, 3.0), 0.0);
+    truck.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(3.0, 3.0), 0.0);
     truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
     truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
+    truck.AddComponent<BoxColliderComponent>(32, 32);
 }
 
 // Initialize game objects...
@@ -161,6 +166,7 @@ void Game::Update() {
     // Invoke all the systems that need to update
     registry->GetSystem<MovementSystem>().Update(deltaTime);
     registry->GetSystem<AnimationSystem>().Update();
+    registry->GetSystem<CollisionSystem>().Update();
 
     // Update registry
     registry->Update();
