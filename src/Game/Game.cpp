@@ -16,9 +16,11 @@
 #include "../System/RenderSystem.h"
 #include "../System/AnimationSystem.h"
 #include "../System/CollisionSystem.h"
+#include "../System/RenderColliderSystem.h"
 
 Game::Game() {
     isRunning = false;
+    isDebug = false;
     registry = std::make_unique<Registry>();
     assetStore = std::make_unique<AssetStore>();
     Logger::Log("Game constructor called!");
@@ -76,6 +78,9 @@ void Game::ProcessInput()
                 if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
                     isRunning = false;
                 }
+                if (sdlEvent.key.keysym.sym == SDLK_d) {
+                    isDebug = !isDebug;
+                }
                 break;
             }
     }
@@ -87,6 +92,7 @@ void Game::LoadLevel(int level) {
     registry->AddSystem<RenderSystem>();
     registry->AddSystem<AnimationSystem>();
     registry->AddSystem<CollisionSystem>();
+    registry->AddSystem<RenderColliderSystem>();
 
     // Add assets
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -132,13 +138,13 @@ void Game::LoadLevel(int level) {
     radar.AddComponent<AnimationComponent>(8, 9, true);
 
     Entity tank = registry->CreateEntity();
-    tank.AddComponent<TransformComponent>(glm::vec2(200.0, 10.0), glm::vec2(2.0, 2.0), 0.0);
+    tank.AddComponent<TransformComponent>(glm::vec2(700.0, 600.0), glm::vec2(2.0, 2.0), 0.0);
     tank.AddComponent<RigidBodyComponent>(glm::vec2(-30.0, 0.0));
     tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 2);
     tank.AddComponent<BoxColliderComponent>(32, 32);
 
     Entity truck = registry->CreateEntity();
-    truck.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(3.0, 3.0), 0.0);
+    truck.AddComponent<TransformComponent>(glm::vec2(500.0, 600.0), glm::vec2(3.0, 3.0), 0.0);
     truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
     truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
     truck.AddComponent<BoxColliderComponent>(32, 32);
@@ -178,7 +184,9 @@ void Game::Render() {
 
     // Invoke all the systems that need to render
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
-
+    if (isDebug) {
+        registry->GetSystem<RenderColliderSystem>().Update(renderer);
+    }
     SDL_RenderPresent(renderer); // Swap the buffer
 }
 
