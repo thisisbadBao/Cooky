@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <typeindex>
 #include <set>
+#include <deque>
 
 const unsigned int MAX_COMPONENTS = 32;
 
@@ -114,12 +115,16 @@ private:
     // Map of active system
     std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 
+    // List of freed ids that were removed
+    std::deque<int> freeIds;
+
 public:
     Registry() { Logger::Log("Registry constructor called!"); };
     ~Registry() { Logger::Log("Registry destructor called!"); };
     void Update();
 
     Entity CreateEntity();
+    void KillEntity(Entity entity);
 
     // Component management
     template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
@@ -127,12 +132,10 @@ public:
     template <typename TComponent> bool HasComponent(Entity entity) const;
     template <typename TComponent> TComponent& GetComponent(Entity entity) const;
 
-    // Add entity to the systems that are interested in it
+    // Add & remove entity to(from) the systems that are interested in it
     void AddEntityToSystem(Entity entity);
+    void RemoveEntityFromSystem(Entity entity);
 
-    // Todo:
-    // KillEntity()
-    
     // System management
     template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
     template <typename TSystem> void RemoveSystem();
