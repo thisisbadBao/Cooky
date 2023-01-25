@@ -1,13 +1,14 @@
 #ifndef ECS_H
 #define ECS_H
 
-#include "../Logger/Logger.h"
 #include <bitset>
 #include <vector>
 #include <unordered_map>
 #include <typeindex>
 #include <set>
 #include <deque>
+
+#include "../Logger/Logger.h"
 
 const unsigned int MAX_COMPONENTS = 32;
 

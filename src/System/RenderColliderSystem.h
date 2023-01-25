@@ -1,11 +1,11 @@
 #ifndef RENDERCOLLIDERSYSTEM_H
 #define RENDERCOLLIDERSYSTEM_H
 
+#include <SDL2/SDL.h>
+
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/BoxColliderComponent.h"
-#include <SDL2/SDL.h>
-
 class RenderColliderSystem: public System {
 public:
     RenderColliderSystem()

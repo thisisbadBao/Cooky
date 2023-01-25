@@ -1,10 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <SDL2/SDL.h>
+
 #include "../ECS/ECS.h"
 #include "../AssetStore/AssetStore.h"
 #include "../EventBus/EventBus.h"
-#include <SDL2/SDL.h>
 
 const int FPS = 60;
 const int MILLISECS_PER_FRAME = 1000 / FPS;

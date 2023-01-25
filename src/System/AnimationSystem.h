@@ -1,10 +1,11 @@
 #ifndef ANIMATIONSYSTEM_H
 #define ANIMATIONSYSTEM_H
 
+#include <SDL2/SDL.h>
+
 #include "../ECS/ECS.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
-#include <SDL2/SDL.h>
 
 class AnimationSystem: public System {
 public:

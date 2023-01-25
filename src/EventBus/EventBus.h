@@ -1,12 +1,13 @@
 #ifndef EVENTBUS_H
 #define EVENTBUS_H
 
-#include "../Logger/Logger.h"
-#include "../EventBus/Event.h"
+#include "SDL2/SDL.h"
 #include <map>
 #include <typeindex>
 #include <list>
 
+#include "../Logger/Logger.h"
+#include "Event.h"
 class IEventCallback {
 private:
     virtual void Call(Event &e) = 0;
@@ -56,7 +57,7 @@ public:
     }
 
     // A listener subscribes to an event
-    template <typename TOwner, typename TEvent>
+    template <typename TEvent, typename TOwner>
     void SubscribeToEvent(TOwner* ownerInstance, void (TOwner::*CallbackFunction)(TEvent&)) {
         if (!subscribers[typeid(TEvent)].get()) {
             subscribers[typeid(TEvent)] = std::make_unique<HandlerList>();
@@ -64,6 +65,7 @@ public:
         auto subscriber = std::make_unique<EventCallBack<TOwner, TEvent>>(ownerInstance, CallbackFunction);
         subscribers[typeid(TEvent)]->push_back(std::move(subscriber));
     }
+    // TODO: UnsubscribeEvent
 
     // When something emits, excute the callback function immediately
     template <typename TEvent, typename ...TArgs>

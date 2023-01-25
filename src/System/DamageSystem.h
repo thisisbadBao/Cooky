@@ -2,6 +2,7 @@
 #define DAMAGESYSTEM_H
 
 #include "../ECS/ECS.h"
+
 #include "../Components/BoxColliderComponent.h"
 #include "../EventBus/EventBus.h"
 #include "../Events/CollisionEvent.h"
@@ -13,7 +14,7 @@ public:
     }
 
     void SubscribeToEvent(std::unique_ptr<EventBus>& eventBus) {
-        eventBus->SubscribeToEvent(this, &DamageSystem::OnCollision);
+        eventBus->SubscribeToEvent<CollisionEvent>(this, &DamageSystem::OnCollision);
     }
 
     void OnCollision(CollisionEvent& event) {

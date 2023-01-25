@@ -18,6 +18,7 @@
 #include "../System/CollisionSystem.h"
 #include "../System/RenderColliderSystem.h"
 #include "../System/DamageSystem.h"
+#include "../System/KeyboardControlSystem.h"
 
 Game::Game() {
     isRunning = false;
@@ -83,6 +84,7 @@ void Game::ProcessInput()
                 if (sdlEvent.key.keysym.sym == SDLK_d) {
                     isDebug = !isDebug;
                 }
+                eventBus->EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
                 break;
             }
     }
@@ -96,6 +98,7 @@ void Game::LoadLevel(int level) {
     registry->AddSystem<CollisionSystem>();
     registry->AddSystem<RenderColliderSystem>();
     registry->AddSystem<DamageSystem>();
+    registry->AddSystem<KeyboardControlSystem>();
 
     // Add assets
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -177,6 +180,7 @@ void Game::Update() {
 
     // Subcribe event
     registry->GetSystem<DamageSystem>().SubscribeToEvent(eventBus);
+    registry->GetSystem<KeyboardControlSystem>().SubscribeToEvent(eventBus);
 
     // Invoke all the systems that need to update
     registry->GetSystem<MovementSystem>().Update(deltaTime);
