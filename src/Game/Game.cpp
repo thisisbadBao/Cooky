@@ -17,12 +17,14 @@
 #include "../System/AnimationSystem.h"
 #include "../System/CollisionSystem.h"
 #include "../System/RenderColliderSystem.h"
+#include "../System/DamageSystem.h"
 
 Game::Game() {
     isRunning = false;
     isDebug = false;
     registry = std::make_unique<Registry>();
     assetStore = std::make_unique<AssetStore>();
+    eventBus = std::make_unique<EventBus>();
     Logger::Log("Game constructor called!");
 }
 
@@ -93,6 +95,7 @@ void Game::LoadLevel(int level) {
     registry->AddSystem<AnimationSystem>();
     registry->AddSystem<CollisionSystem>();
     registry->AddSystem<RenderColliderSystem>();
+    registry->AddSystem<DamageSystem>();
 
     // Add assets
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -169,10 +172,16 @@ void Game::Update() {
     // Store the current frame time
     millisecsPreviousFrame = SDL_GetTicks(); // millisecond
 
+    // Reset all event handlers
+    eventBus->Reset();
+
+    // Subcribe event
+    registry->GetSystem<DamageSystem>().SubscribeToEvent(eventBus);
+
     // Invoke all the systems that need to update
     registry->GetSystem<MovementSystem>().Update(deltaTime);
     registry->GetSystem<AnimationSystem>().Update();
-    registry->GetSystem<CollisionSystem>().Update();
+    registry->GetSystem<CollisionSystem>().Update(eventBus);
 
     // Update registry
     registry->Update();

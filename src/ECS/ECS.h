@@ -38,6 +38,7 @@ public:
     Entity(int id): id(id) {};
     Entity(const Entity &entity) = default;
     int GetId() const;
+    void Kill();
 
     Entity& operator=(const Entity& other) = default;
     bool operator==(const Entity& other) const { return other.GetId() == id; }
