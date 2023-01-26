@@ -13,6 +13,7 @@ enum LogType {
 struct LogEntry {
     LogType type;
     std::string message;
+    // TODO: Add log level
 };
 
 class Logger {
