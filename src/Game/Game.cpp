@@ -140,6 +140,7 @@ void Game::LoadLevel(int level) {
                 mapFile.ignore();
 
                 Entity tile = registry->CreateEntity();
+                tile.Group("tiles");
                 tile.AddComponent<TransformComponent>(glm::vec2(x * tileScale * tileSize, y * tileScale * tileSize), glm::vec2(tileScale, tileScale), 0.0);
                 tile.AddComponent<SpriteComponent>("jungle-image", tileSize, tileSize, 0, false, srcRectX, srcRectY);
             }
@@ -151,6 +152,7 @@ void Game::LoadLevel(int level) {
 
     // Create entities
     Entity chopper = registry->CreateEntity();
+    chopper.Tag("player");
     chopper.AddComponent<TransformComponent>(glm::vec2(100.0, 100.0), glm::vec2(1.0, 1.0), 0.0);
     chopper.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 30.0));
     chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
@@ -164,13 +166,15 @@ void Game::LoadLevel(int level) {
     radar.AddComponent<AnimationComponent>(8, 9, true);
 
     Entity tank = registry->CreateEntity();
-    tank.AddComponent<TransformComponent>(glm::vec2(700.0, 600.0), glm::vec2(2.0, 2.0), 0.0);
-    tank.AddComponent<RigidBodyComponent>(glm::vec2(-30.0, 0.0));
+    chopper.Tag("enemy");
+    tank.AddComponent<TransformComponent>(glm::vec2(100.0, 100.0), glm::vec2(2.0, 2.0), 0.0);
+    tank.AddComponent<RigidBodyComponent>(glm::vec2(30.0, 0.0));
     tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 2);
     tank.AddComponent<BoxColliderComponent>(32, 32);
 
     Entity truck = registry->CreateEntity();
-    truck.AddComponent<TransformComponent>(glm::vec2(500.0, 600.0), glm::vec2(3.0, 3.0), 0.0);
+    chopper.Tag("enemy");
+    truck.AddComponent<TransformComponent>(glm::vec2(200.0, 100.0), glm::vec2(3.0, 3.0), 0.0);
     truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
     truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
     truck.AddComponent<BoxColliderComponent>(32, 32);
@@ -219,7 +223,7 @@ void Game::Render() {
     // Invoke all the systems that need to render
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
     if (isDebug) {
-        registry->GetSystem<RenderColliderSystem>().Update(renderer);
+        registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
     }
     SDL_RenderPresent(renderer); // Swap the buffer
 }
