@@ -14,6 +14,7 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/KeyboardControlComponent.h"
 #include "../Components/CameraFollowComponent.h"
+#include "../Components/TextLabelComponent.h"
 #include "../System/MovementSystem.h"
 #include "../System/RenderSystem.h"
 #include "../System/AnimationSystem.h"
@@ -22,6 +23,7 @@
 #include "../System/DamageSystem.h"
 #include "../System/KeyboardControlSystem.h"
 #include "../System/CameraMovementSystem.h"
+#include "../System/RenderTextSystem.h"
 
 int Game::windowWidth;
 int Game::windowHeight;
@@ -44,6 +46,10 @@ Game::~Game() {
 void Game::Initialize() {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         Logger::Err("Error initializing SDL.");
+        return;
+    }
+    if (TTF_Init() != 0) {
+        Logger::Err("Error initializing SDL TTF.");
         return;
     }
     SDL_DisplayMode displayMode;
@@ -114,6 +120,7 @@ void Game::LoadLevel(int level) {
     registry->AddSystem<DamageSystem>();
     registry->AddSystem<KeyboardControlSystem>();
     registry->AddSystem<CameraMovementSystem>();
+    registry->AddSystem<RenderTextSystem>();
 
     // Add assets
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -121,6 +128,7 @@ void Game::LoadLevel(int level) {
     assetStore->AddTexture(renderer, "jungle-image", "./assets/tilemaps/jungle.png");
     assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chopper-spritesheet.png");
     assetStore->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
+    assetStore->AddFont("charriot-font", "./assets/fonts/charriot.ttf", 20);
 
     // Load the tilemap
     int tileSize = 32;
@@ -166,18 +174,22 @@ void Game::LoadLevel(int level) {
     radar.AddComponent<AnimationComponent>(8, 9, true);
 
     Entity tank = registry->CreateEntity();
-    chopper.Tag("enemy");
+    chopper.Group("enemy");
     tank.AddComponent<TransformComponent>(glm::vec2(100.0, 100.0), glm::vec2(2.0, 2.0), 0.0);
     tank.AddComponent<RigidBodyComponent>(glm::vec2(30.0, 0.0));
     tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 2);
     tank.AddComponent<BoxColliderComponent>(32, 32);
 
     Entity truck = registry->CreateEntity();
-    chopper.Tag("enemy");
+    chopper.Group("enemy");
     truck.AddComponent<TransformComponent>(glm::vec2(200.0, 100.0), glm::vec2(3.0, 3.0), 0.0);
     truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
     truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
     truck.AddComponent<BoxColliderComponent>(32, 32);
+
+    Entity label = registry->CreateEntity();
+    SDL_Color white = {255, 255, 255};
+    label.AddComponent<TextLabelComponent>(glm::vec2(windowWidth / 2 - 40, 10), "COOKY 0.0.1", "charriot-font", white, true);
 }
 
 // Initialize game objects...
@@ -222,6 +234,7 @@ void Game::Render() {
     // SDL_RenderSetViewport(renderer, &camera);
     // Invoke all the systems that need to render
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
+    registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
     }
