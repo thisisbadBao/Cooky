@@ -7,6 +7,7 @@
 #include <typeindex>
 #include <set>
 #include <deque>
+#include <iostream>
 
 #include "../Logger/Logger.h"
 
@@ -82,7 +83,9 @@ public:
 
 class IPool {
 public:
-    virtual ~IPool() {}
+    virtual ~IPool() = default;
+
+    virtual void RemoveEntityFromPool(int entityId) = 0;
 };
 
 // A vector of objects of type T
@@ -90,18 +93,72 @@ template <typename T>
 class Pool: public IPool {
 private:
     std::vector<T> data;
+    int size;
+    std::unordered_map<int, int> entityToIndex;
+    std::unordered_map<int, int> indexToEntity;
 
 public:
-    Pool(int size = 100) { Resize(size); }
+    Pool(int capcity = 100) {
+        size = 0;
+        data.resize(capcity);
+    }
+
     virtual ~Pool() = default;
 
-    bool isEmpty() const { return data.empty(); }
-    int GetSize() const { return data.size(); }
+    bool IsEmpty() const { return size == 0; }
+
+    int GetSize() const { return size; }
+
     void Resize(int n) { data.resize(n); }
-    void Clear() { data.clear(); }
+
+    void Clear() {
+        data.clear();
+        size = 0;
+    }
+
     void Add(T object) { data.push_back(object); }
-    void Set(int index, T object) { data[index] = object; }
-    T& Get(int index) { return static_cast<T &>(data[index]); }
+
+    void Set(int entityId, T object) {
+        if (entityToIndex.find(entityId) != entityToIndex.end()) {
+            int index = entityToIndex[entityId];
+            data[index] = object;
+        } else {
+            int index = size++;
+            entityToIndex.emplace(entityId, index);
+            indexToEntity.emplace(index, entityId);
+            if (index >= data.capacity()) {
+                Resize(size * 2);
+            }
+            data[index] = object;
+        }
+    }
+
+    void Remove(int entityId) {
+        // Replace the data(component) that will be removed with the last one
+        int indexToRemove = entityToIndex[entityId];
+        int lastIndex = size - 1;
+        data[indexToRemove] = data[lastIndex];
+
+        // Update the entity-index map
+        int lastEntityId = indexToEntity[lastIndex];
+        entityToIndex[lastEntityId] = indexToRemove;
+        indexToEntity[indexToRemove] = lastEntityId;
+        entityToIndex.erase(entityId);
+        indexToEntity.erase(lastIndex);
+        size--;
+    }
+
+    void RemoveEntityFromPool(int entityId) override {
+        if (entityToIndex.find(entityId) != entityToIndex.end()) {
+            Remove(entityId);
+        }
+    }
+
+    T& Get(int entityId) {
+        int index = entityToIndex[entityId];
+        return static_cast<T &>(data[index]);
+    }
+
     T& operator[](unsigned int index) { return data[index]; }
 };
 
@@ -113,7 +170,7 @@ private:
     std::set<Entity> entitiesToBeKilled; // Entities will be killed in the next Update() in Registry
 
     // Each pool contains all the data of a certain component
-    // vector index = component type id, Ipool index = entity id
+    // vector index = component type id
     std::vector<std::shared_ptr<IPool>> componentPools;
 
     // which component is "on" of each entity
@@ -220,10 +277,6 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args) {
     // Get the pool for TComponent
     std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
 
-    if (entityId >= componentPool->GetSize()) {
-        componentPool->Resize(numEntites);
-    }
-
     // Create a new component
     TComponent newComponent(std::forward<TArgs>(args)...);
 
@@ -240,6 +293,9 @@ template <typename TComponent>
 void Registry::RemoveComponent(Entity entity){
     const auto componentId = Component<TComponent>::GetId();
     const auto entityId = entity.GetId();
+
+    std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
+    componentPool->Remove(entityId);
     entityComponentSignatures[entityId].set(componentId, false);
 
     Logger::Log("Component id = " + std::to_string(componentId) + " was removed from entity id = " + std::to_string(entityId));
