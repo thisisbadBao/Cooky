@@ -4,4 +4,9 @@
 # Ignore vim swaps
 *.swp
 
+# Ignore build file
+build*/
 engine
+
+# Ignore imgui ini file
+imgui.ini

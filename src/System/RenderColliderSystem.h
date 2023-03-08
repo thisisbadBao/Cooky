@@ -8,8 +8,7 @@
 #include "../Components/BoxColliderComponent.h"
 class RenderColliderSystem: public System {
 public:
-    RenderColliderSystem()
-    {
+    RenderColliderSystem() {
         RequireComponent<TransformComponent>();
         RequireComponent<BoxColliderComponent>();
     }

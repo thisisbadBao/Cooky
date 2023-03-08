@@ -5,6 +5,9 @@
 #include <fstream>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
+#include <imgui/imgui.h>
+#include <imgui/imgui_sdl.h>
+#include <imgui/imgui_impl_sdl.h>
 
 #include "../Logger/Logger.h"
 #include "../Components/TransformComponent.h"
@@ -24,6 +27,8 @@
 #include "../System/KeyboardControlSystem.h"
 #include "../System/CameraMovementSystem.h"
 #include "../System/RenderTextSystem.h"
+#include "../System/RenderGUISystem.h"
+
 
 int Game::windowWidth;
 int Game::windowHeight;
@@ -54,8 +59,8 @@ void Game::Initialize() {
     }
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
-    windowWidth = 800; // displayMode.w;
-    windowHeight = 600; // displayMode.h;
+    windowWidth = displayMode.w / 2;
+    windowHeight = displayMode.h / 2;
     window = SDL_CreateWindow(
         NULL,
         SDL_WINDOWPOS_CENTERED,
@@ -79,6 +84,10 @@ void Game::Initialize() {
         return;
     }
 
+    // Init ImGui context
+    ImGui::CreateContext();
+    ImGuiSDL::Initialize(renderer, windowWidth, windowHeight);
+
     // Init camera
     camera.x = 0;
     camera.y = 0;
@@ -93,6 +102,17 @@ void Game::ProcessInput()
 {
     SDL_Event sdlEvent;
     while (SDL_PollEvent(&sdlEvent)) {
+        // ImGui SDL input
+        ImGui_ImplSDL2_ProcessEvent(&sdlEvent);
+        ImGuiIO& io = ImGui::GetIO();
+
+        int mouseX, mouseY;
+        const int buttons = SDL_GetMouseState(&mouseX, &mouseY);
+        io.MousePos = ImVec2(mouseX, mouseY);
+        io.MouseDown[0] = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
+        io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
+
+        // Handle core SDL event
         switch (sdlEvent.type) {
             case SDL_QUIT:
                 isRunning = false;
@@ -121,6 +141,7 @@ void Game::LoadLevel(int level) {
     registry->AddSystem<KeyboardControlSystem>();
     registry->AddSystem<CameraMovementSystem>();
     registry->AddSystem<RenderTextSystem>();
+    registry->AddSystem<RenderGUISystem>();
 
     // Add assets
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -237,6 +258,7 @@ void Game::Render() {
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
+        registry->GetSystem<RenderGUISystem>().Update();
     }
     SDL_RenderPresent(renderer); // Swap the buffer
 }
@@ -252,6 +274,8 @@ void Game::Run() {
 }
 
 void Game::Destroy() {
+    ImGuiSDL::Deinitialize();
+    ImGui::DestroyContext();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
