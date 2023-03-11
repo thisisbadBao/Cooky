@@ -13,14 +13,16 @@ public:
         RequireComponent<BoxColliderComponent>();
     }
 
-    void SubscribeToEvent(std::unique_ptr<EventBus>& eventBus) {
+    void SubscribeToEvent(const std::unique_ptr<EventBus>& eventBus) {
         eventBus->SubscribeToEvent<CollisionEvent>(this, &DamageSystem::OnCollision);
     }
 
     void OnCollision(CollisionEvent& event) {
-        Logger::Log("The DamageSystem received an event between " + std::to_string(event.a.GetId()) + " and " + std::to_string(event.b.GetId()));
-        event.a.Kill();
-        event.b.Kill();
+        if (event.a.BelongsToGroup("enemy") && event.b.BelongsToGroup("enemy")) {
+            Logger::Log("The DamageSystem received an event between " + std::to_string(event.a.GetId()) + " and " + std::to_string(event.b.GetId()));
+            event.a.Kill();
+            event.b.Kill();
+        }
     }
 
     void Update() {

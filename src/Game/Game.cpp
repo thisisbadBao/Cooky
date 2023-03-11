@@ -37,7 +37,7 @@ int Game::mapHeight;
 
 Game::Game() {
     isRunning = false;
-    isDebug = false;
+    isDebug = true;
     registry = std::make_unique<Registry>();
     assetStore = std::make_unique<AssetStore>();
     eventBus = std::make_unique<EventBus>();
@@ -121,7 +121,7 @@ void Game::ProcessInput()
                 if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
                     isRunning = false;
                 }
-                if (sdlEvent.key.keysym.sym == SDLK_d) {
+                if (sdlEvent.key.keysym.sym == SDLK_F1) {
                     isDebug = !isDebug;
                 }
                 eventBus->EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
@@ -149,6 +149,7 @@ void Game::LoadLevel(int level) {
     assetStore->AddTexture(renderer, "jungle-image", "./assets/tilemaps/jungle.png");
     assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chopper-spritesheet.png");
     assetStore->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
+    assetStore->AddTexture(renderer, "tree-image", "./assets/images/tree.png");
     assetStore->AddFont("charriot-font", "./assets/fonts/charriot.ttf", 20);
 
     // Load the tilemap
@@ -160,31 +161,31 @@ void Game::LoadLevel(int level) {
     mapFile.open("./assets/tilemaps/jungle.map");
 
     for (int y = 0; y < mapNumRows; y++) {
-            for (int x = 0; x < mapNumCols; x++) {
-                char ch;
-                mapFile.get(ch);
-                int srcRectY = std::atoi(&ch) * tileSize;
-                mapFile.get(ch);
-                int srcRectX = std::atoi(&ch) * tileSize;
-                mapFile.ignore();
+        for (int x = 0; x < mapNumCols; x++) {
+            char ch;
+            mapFile.get(ch);
+            int srcRectY = std::atoi(&ch) * tileSize;
+            mapFile.get(ch);
+            int srcRectX = std::atoi(&ch) * tileSize;
+            mapFile.ignore();
 
-                Entity tile = registry->CreateEntity();
-                tile.Group("tiles");
-                tile.AddComponent<TransformComponent>(glm::vec2(x * tileScale * tileSize, y * tileScale * tileSize), glm::vec2(tileScale, tileScale), 0.0);
-                tile.AddComponent<SpriteComponent>("jungle-image", tileSize, tileSize, 0, false, srcRectX, srcRectY);
-            }
+            Entity tile = registry->CreateEntity();
+            tile.Group("tiles");
+            tile.AddComponent<TransformComponent>(glm::vec2(x * tileScale * tileSize, y * tileScale * tileSize), glm::vec2(tileScale, tileScale), 0.0);
+            tile.AddComponent<SpriteComponent>("jungle-image", tileSize, tileSize, 0, false, srcRectX, srcRectY);
+        }
     }
     mapFile.close();
 
-    mapWidth = mapNumCols * tileSize * tileSize;
-    mapHeight = mapNumRows * tileSize * tileSize;
+    mapWidth = mapNumCols * tileSize * tileScale;
+    mapHeight = mapNumRows * tileSize * tileScale;
 
     // Create entities
     Entity chopper = registry->CreateEntity();
     chopper.Tag("player");
     chopper.AddComponent<TransformComponent>(glm::vec2(100.0, 100.0), glm::vec2(1.0, 1.0), 0.0);
     chopper.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 30.0));
-    chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
+    chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 3);
     chopper.AddComponent<AnimationComponent>(2, 15, true);
     chopper.AddComponent<KeyboardControlComponent>(glm::vec2(0, -180), glm::vec2(180, 0), glm::vec2(0, 180), glm::vec2(-180, 0));
     chopper.AddComponent<CameraFollowComponent>();
@@ -195,18 +196,30 @@ void Game::LoadLevel(int level) {
     radar.AddComponent<AnimationComponent>(8, 9, true);
 
     Entity tank = registry->CreateEntity();
-    chopper.Group("enemy");
-    tank.AddComponent<TransformComponent>(glm::vec2(100.0, 100.0), glm::vec2(2.0, 2.0), 0.0);
+    tank.Group("enemy");
+    tank.AddComponent<TransformComponent>(glm::vec2(100.0, 525.0), glm::vec2(2.0, 2.0), 0.0);
     tank.AddComponent<RigidBodyComponent>(glm::vec2(30.0, 0.0));
     tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 2);
     tank.AddComponent<BoxColliderComponent>(32, 32);
 
     Entity truck = registry->CreateEntity();
-    chopper.Group("enemy");
-    truck.AddComponent<TransformComponent>(glm::vec2(200.0, 100.0), glm::vec2(3.0, 3.0), 0.0);
+    truck.Group("enemy");
+    truck.AddComponent<TransformComponent>(glm::vec2(200.0, 525.0), glm::vec2(3.0, 3.0), 0.0);
     truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
     truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
     truck.AddComponent<BoxColliderComponent>(32, 32);
+
+    Entity treeA = registry->CreateEntity();
+    treeA.Group("obstacle");
+    treeA.AddComponent<TransformComponent>(glm::vec2(540.0, 670.0), glm::vec2(2.0, 2.0), 0.0);
+    treeA.AddComponent<SpriteComponent>("tree-image", 16, 32, 1);
+    treeA.AddComponent<BoxColliderComponent>(16, 32);
+
+    Entity treeB = registry->CreateEntity();
+    treeB.Group("obstacle");
+    treeB.AddComponent<TransformComponent>(glm::vec2(960.0, 670.0), glm::vec2(2.0, 2.0), 0.0);
+    treeB.AddComponent<SpriteComponent>("tree-image", 16, 32, 1);
+    treeB.AddComponent<BoxColliderComponent>(16, 32);
 
     Entity label = registry->CreateEntity();
     SDL_Color white = {255, 255, 255};
@@ -236,6 +249,7 @@ void Game::Update() {
     eventBus->Reset();
 
     // Subcribe event
+    registry->GetSystem<MovementSystem>().SubscribeToEvent(eventBus);
     registry->GetSystem<DamageSystem>().SubscribeToEvent(eventBus);
     registry->GetSystem<KeyboardControlSystem>().SubscribeToEvent(eventBus);
 
@@ -258,7 +272,7 @@ void Game::Render() {
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
-        registry->GetSystem<RenderGUISystem>().Update();
+        registry->GetSystem<RenderGUISystem>().Update(registry, camera);
     }
     SDL_RenderPresent(renderer); // Swap the buffer
 }

@@ -28,6 +28,16 @@ public:
             RenderableEntity renderableEntity;
             renderableEntity.transformComponent = entity.GetComponent<TransformComponent>();
             renderableEntity.spriteComponent = entity.GetComponent<SpriteComponent>();
+
+            // Bypass entity if it's outside the camera
+            bool isEntityOutsideCamera = (
+                renderableEntity.transformComponent.position.x + renderableEntity.spriteComponent.width * renderableEntity.transformComponent.scale.x < camera.x ||
+                renderableEntity.transformComponent.position.x > camera.x + camera.w ||
+                renderableEntity.transformComponent.position.y + renderableEntity.spriteComponent.height * renderableEntity.transformComponent.scale.y < camera.y ||
+                renderableEntity.transformComponent.position.y > camera.y + camera.h
+            );
+            if (isEntityOutsideCamera && !renderableEntity.spriteComponent.isFixed) continue;
+
             renderableEntities.emplace_back(renderableEntity);
         }
         std::sort(renderableEntities.begin(), renderableEntities.end(),
@@ -55,7 +65,7 @@ public:
                 &dstRect,
                 transform.rotation,
                 NULL,
-                SDL_FLIP_NONE
+                sprite.flip
             );
         }
     }
