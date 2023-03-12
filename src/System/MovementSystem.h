@@ -3,6 +3,7 @@
 
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
+#include "../Components/SpriteComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../EventBus/EventBus.h"
 #include "../Events/CollisionEvent.h"

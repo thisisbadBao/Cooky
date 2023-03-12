@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <SDL2/SDL.h>
+#include <sol/sol.hpp>
 
 #include "../ECS/ECS.h"
 #include "../AssetStore/AssetStore.h"
@@ -18,6 +19,7 @@ private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Rect camera;
+    sol::state lua;
 
     std::unique_ptr<Registry> registry;
     std::unique_ptr<AssetStore> assetStore;
@@ -28,7 +30,6 @@ public:
     ~Game();
     void Initialize();
     void Setup();
-    void LoadLevel(int level);
     void ProcessInput();
     void Update();
     void Render();
