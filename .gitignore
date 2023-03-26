@@ -10,3 +10,6 @@ engine
 
 # Ignore imgui ini file
 imgui.ini
+
+# Ignore idea file
+.idea/

@@ -19,6 +19,7 @@
 #include "../System/CameraMovementSystem.h"
 #include "../System/RenderTextSystem.h"
 #include "../System/RenderGUISystem.h"
+#include "../System/ScriptSystem.h"
 #include "../Game/LevelLoader.h"
 
 int Game::windowWidth;
@@ -134,6 +135,10 @@ void Game::Setup() {
     registry->AddSystem<CameraMovementSystem>();
     registry->AddSystem<RenderTextSystem>();
     registry->AddSystem<RenderGUISystem>();
+    registry->AddSystem<ScriptSystem>();
+
+    // Create the Lua binding
+    registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua);
 
     LevelLoader loader;
     lua.open_libraries(sol::lib::base, sol::lib::math);
@@ -167,6 +172,7 @@ void Game::Update() {
     registry->GetSystem<AnimationSystem>().Update();
     registry->GetSystem<CollisionSystem>().Update(eventBus);
     registry->GetSystem<CameraMovementSystem>().Update(camera);
+    registry->GetSystem<ScriptSystem>().Update();
 
     // Update registry
     registry->Update();

@@ -11,7 +11,7 @@
 #include "../Components/KeyboardControlComponent.h"
 #include "../Components/CameraFollowComponent.h"
 #include "../Components/TextLabelComponent.h"
-
+#include "../Components/ScriptComponent.h"
 
 LevelLoader::LevelLoader() {
     Logger::Log("LevelLoader constructor called!");
@@ -204,6 +204,13 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
                         entity["components"]["keyboard_controller"]["left_velocity"]["y"]
                     )
                 );
+            }
+
+            // Script
+            sol::optional<sol::table> script = entity["components"]["on_update_script"];
+            if (script != sol::nullopt) {
+                sol::function func = entity["components"]["on_update_script"][0];
+                newEntity.AddComponent<ScriptComponent>(func);
             }
         }
         i++;
