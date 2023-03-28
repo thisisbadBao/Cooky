@@ -5,7 +5,7 @@
 #include <sol/sol.hpp>
 
 #include "../ECS/ECS.h"
-#include "../AssetStore/AssetStore.h"
+#include "../AssetManager/AssetManager.h"
 #include "../EventBus/EventBus.h"
 
 const int FPS = 60;
@@ -22,7 +22,7 @@ private:
     sol::state lua;
 
     std::unique_ptr<Registry> registry;
-    std::unique_ptr<AssetStore> assetStore;
+    std::unique_ptr<AssetManager> assetManager;
     std::unique_ptr<EventBus> eventBus;
 
 public:

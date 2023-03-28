@@ -64,10 +64,11 @@ Level = {
                 },
                 on_update_script = {
                     [0] =
-                    function(entity)
-                        local cur_x, cur_y = get_position(entity)
-                        print("Executing player script, x: " .. cur_x .. " y: " .. cur_y)
-                    end
+                        function(entity)
+                            local cur_x, cur_y = get_position(entity)
+                            -- entity:test()
+                            print("Executing player script, x: " .. cur_x .. " y: " .. cur_y .. " id:" .. entity:getId())
+                        end
                 }
             }
         },

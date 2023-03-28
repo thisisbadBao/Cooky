@@ -49,11 +49,11 @@ private:
 
 public:
     EventBus() {
-        Logger::Log("EventBus constructor called!");
+        Logger::LogD("EventBus constructor called!");
     }
 
     ~EventBus() {
-        Logger::Log("EventBus destructor called!");
+        Logger::LogD("EventBus destructor called!");
     }
 
     // A listener subscribes to an event

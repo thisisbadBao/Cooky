@@ -1,29 +1,33 @@
 #ifndef SCRIPTSYSTEM_H
 #define SCRIPTSYSTEM_H
 
+#include <glm/glm.hpp>
+#include <SDL2/SDL.h>
+
 #include "../ECS/ECS.h"
+#include "../Game/Game.h"
+#include "../AssetManager/AssetManager.h"
 #include "../Components/ScriptComponent.h"
+#include "../Components/SpriteComponent.h"
 #include "../Components/TransformComponent.h"
 
-std::tuple<double, double> GetEntityPosition(Entity entity) {
-    if (entity.HasComponent<TransformComponent>()) {
-        const auto transform = entity.GetComponent<TransformComponent>();
-        return std::make_tuple(transform.position.x, transform.position.y);
-    } else {
-        Logger::Err("Entity has no TransformComponent");
-        return std::make_tuple(0.0, 0.0);
-    }
+void LuaBinding_AddTransform(Entity entity, glm::vec2 position = glm::vec2(0,0),
+    glm::vec2 scale = glm::vec2(1,1), double rotation = 0.0) {
+    entity.AddComponent<TransformComponent>(position, scale, rotation);
+    Logger::LogT("Add transform component");
 }
 
-void SetEntityPosition(Entity entity, double x, double y) {
-    if (entity.HasComponent<TransformComponent>()) {
-        auto &transform = entity.GetComponent<TransformComponent>();
-        transform.position.x = x;
-        Logger::Log("Entity has TransformComponent");
-        transform.position.y = y;
-    } else {
-        Logger::Err("Entity has no TransformComponent");
-    }
+void LuaBinding_AddSprite(Entity entity, const std::string& assetId = "", int width = 0, int height = 0,
+    int zIndex = 0, bool isFixed = false, int srcRectX = 0, int srcRectY = 0) {
+    entity.AddComponent<SpriteComponent>(assetId, width, height, zIndex, isFixed, srcRectX, srcRectY);
+}
+
+void LuaBinding_AddRigidBody(Entity entity, glm::vec2 velocity = glm::vec2(0.0, 0.0)) {
+    entity.AddComponent<RigidBodyComponent>(velocity);
+}
+
+void Test() {
+    Logger::LogT("Cooky v0.0.1");
 }
 
 class ScriptSystem: public System {
@@ -32,16 +36,32 @@ public:
         RequireComponent<ScriptComponent>();
     }
 
-    void CreateLuaBindings(sol::state& lua) {
+    void CreateLuaBindings(sol::state& lua, std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager,
+        SDL_Renderer* renderer) {
         lua.new_usertype<Entity>(
             "entity",
-            "get_id", &Entity::GetId,
-            "destroy", &Entity::Kill,
-            "has_tag", &Entity::HasTag,
-            "belongs_to_group", &Entity::BelongsToGroup
+            sol::constructors<Entity(int id), Entity(const Entity &entity)>(),
+            "getId", &Entity::GetId,
+            "kill", &Entity::Kill,
+            "tag", &Entity::Tag,
+            "hasTag", &Entity::HasTag,
+            "group", &Entity::Group,
+            "groupOf", &Entity::BelongsToGroup,
+            "addTransform", LuaBinding_AddTransform,
+            "addSprite", LuaBinding_AddSprite,
+            "addRigidBody", LuaBinding_AddRigidBody
         );
-        lua.set_function("get_position", GetEntityPosition);
-        lua.set_function("set_position", SetEntityPosition);
+        lua.set_function("test", Test);
+        lua.set_function("createEntity", [&]() -> Entity { return registry->CreateEntity();});
+        lua.set_function("addTexture", [&](std::string id, std::string file) {
+            assetManager->AddTexture(renderer, id, file); 
+            Logger::LogT("add texture: " + id);
+        });
+        lua.set_function("addFont", [&](std::string id, std::string file, int fontSize) {
+            assetManager->AddFont(id, file, fontSize);
+            Logger::LogT("add font: " + id);
+        });
+
     }
 
     void Update() {

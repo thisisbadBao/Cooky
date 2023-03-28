@@ -31,13 +31,13 @@ Game::Game() {
     isRunning = false;
     isDebug = true;
     registry = std::make_unique<Registry>();
-    assetStore = std::make_unique<AssetStore>();
+    assetManager = std::make_unique<AssetManager>();
     eventBus = std::make_unique<EventBus>();
-    Logger::Log("Game constructor called!");
+    Logger::LogD("Game constructor called!");
 }
 
 Game::~Game() {
-    Logger::Log("Game destructor called!");
+    Logger::LogD("Game destructor called!");
 }
 
 void Game::Initialize() {
@@ -138,11 +138,11 @@ void Game::Setup() {
     registry->AddSystem<ScriptSystem>();
 
     // Create the Lua binding
-    registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua);
+    registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager, renderer);
 
     LevelLoader loader;
     lua.open_libraries(sol::lib::base, sol::lib::math);
-    loader.LoadLevel(lua, registry, assetStore, renderer, 1);
+    loader.LoadLevel(lua, registry, assetManager, renderer, 1);
 }
 
 // Update game object
@@ -183,8 +183,8 @@ void Game::Render() {
     SDL_RenderClear(renderer);
     // SDL_RenderSetViewport(renderer, &camera);
     // Invoke all the systems that need to render
-    registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
-    registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, camera);
+    registry->GetSystem<RenderSystem>().Update(renderer, assetManager, camera);
+    registry->GetSystem<RenderTextSystem>().Update(renderer, assetManager, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
         registry->GetSystem<RenderGUISystem>().Update(registry, camera);

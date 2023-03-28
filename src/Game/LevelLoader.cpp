@@ -14,16 +14,16 @@
 #include "../Components/ScriptComponent.h"
 
 LevelLoader::LevelLoader() {
-    Logger::Log("LevelLoader constructor called!");
+    Logger::LogD("LevelLoader constructor called!");
 }
 
 LevelLoader::~LevelLoader() {
-    Logger::Log("LevelLoader destructor called!");
+    Logger::LogD("LevelLoader destructor called!");
 }
 
-void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& registry, std::unique_ptr<AssetStore>& assetStore, SDL_Renderer* renderer,int levelNumber) {
+void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager, SDL_Renderer* renderer,int levelNumber) {
     // syntax check
-    sol::load_result script = lua.load_file("./assets/scripts/Level1.lua");
+    sol::load_result script = lua.load_file("./assets/scripts/scriptTest.lua");
     if (!script.valid()) {
         sol::error err = script;
         std::string errMsg = err.what();
@@ -31,7 +31,10 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
         return;
     }
 
-    lua.script_file("./assets/scripts/Level1.lua");
+    lua.script_file("./assets/scripts/scriptTest.lua");
+
+    return;
+
     Logger::Log("Open Level1");
 
     sol::table level = lua["Level"];
@@ -48,10 +51,10 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
         std::string assetType = asset["type"];
         std::string assetId = asset["id"];
         if (assetType == "texture") {
-            assetStore->AddTexture(renderer, asset["id"], asset["file"]);
+            assetManager->AddTexture(renderer, asset["id"], asset["file"]);
             Logger::Log("New texture: " + assetId);
         } else if (assetType == "font") {
-            assetStore->AddFont(asset["id"], asset["file"], asset["font_size"]);
+            assetManager->AddFont(asset["id"], asset["file"], asset["font_size"]);
             Logger::Log("New font: " + assetId);
         }
         i++;

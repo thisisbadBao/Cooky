@@ -1,19 +1,19 @@
-#ifndef ASSETSTORE_H
-#define ASSETSTORE_H
+#ifndef AssetManager_H
+#define AssetManager_H
 
 #include <map>
 #include <string>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-class AssetStore {
+class AssetManager {
 private:
     std::map<std::string, SDL_Texture*> textures;
     std::map<std::string, TTF_Font*> fonts;
 
 public:
-    AssetStore();
-    ~AssetStore();
+    AssetManager();
+    ~AssetManager();
 
     void ClearAssets();
 

@@ -190,8 +190,8 @@ private:
     std::unordered_map<int, std::string> groupPerEntity;
 
 public:
-    Registry() { Logger::Log("Registry constructor called!"); };
-    ~Registry() { Logger::Log("Registry destructor called!"); };
+    Registry() { Logger::LogD("Registry constructor called!"); };
+    ~Registry() { Logger::LogD("Registry destructor called!"); };
     void Update();
 
     Entity CreateEntity();
@@ -286,7 +286,7 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args) {
     // To turn on the component for the entity
     entityComponentSignatures[entityId].set(componentId);
 
-    // Logger::Log("Component id = " + std::to_string(componentId) + " was added to entity id = " + std::to_string(entityId));
+    Logger::LogT("Component id = " + std::to_string(componentId) + " was added to entity id = " + std::to_string(entityId));
 }
 
 template <typename TComponent>
@@ -298,7 +298,7 @@ void Registry::RemoveComponent(Entity entity){
     componentPool->Remove(entityId);
     entityComponentSignatures[entityId].set(componentId, false);
 
-    Logger::Log("Component id = " + std::to_string(componentId) + " was removed from entity id = " + std::to_string(entityId));
+    Logger::LogT("Component id = " + std::to_string(componentId) + " was removed from entity id = " + std::to_string(entityId));
 }
 
 template <typename TComponent>

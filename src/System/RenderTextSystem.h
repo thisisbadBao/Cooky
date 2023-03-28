@@ -2,7 +2,7 @@
 #define RENDERTEXTSYSTEM_H
 
 #include "../ECS/ECS.h"
-#include "../AssetStore/AssetStore.h"
+#include "../AssetManager/AssetManager.h"
 #include "../Components/TextLabelComponent.h"
 #include <SDL2/SDL.h>
 
@@ -13,11 +13,11 @@ public:
         RequireComponent<TextLabelComponent>();
     }
 
-    void Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore, SDL_Rect camera) {
+    void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetManager, SDL_Rect camera) {
         for (auto entity : GetSystemEntities()) {
             const auto textLabel = entity.GetComponent<TextLabelComponent>();
             SDL_Surface *surface = TTF_RenderText_Blended(
-                assetStore->GetFont(textLabel.assetId),
+                assetManager->GetFont(textLabel.assetId),
                 textLabel.text.c_str(),
                 textLabel.color
             );

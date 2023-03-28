@@ -24,7 +24,7 @@ add_executable(cooky
 		src/Game/Game.cpp
 		src/Logger/Logger.cpp
 		src/ECS/ECS.cpp
-		src/AssetStore/AssetStore.cpp
+		src/AssetManager/AssetManager.cpp
 		src/Main.cpp)
 
 target_link_libraries(cooky ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})

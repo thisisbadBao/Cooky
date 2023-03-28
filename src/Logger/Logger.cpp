@@ -5,6 +5,8 @@
 #include <ctime>
 
 std::vector<LogEntry> Logger::messages;
+LogLevel Logger::level = LOG_LEVEL_TEST;
+
 
 std::string CurrentDateTimeToString() {
     std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -18,6 +20,27 @@ void Logger::Log(const std::string& message) {
     logEntry.type = LOG_INFO;
     logEntry.message = "LOG: [" + CurrentDateTimeToString() + "]: " + message;
     std::cout << "\x1B[32m" << logEntry.message << "\033[0m" << std::endl;
+    messages.push_back(logEntry);
+}
+
+void Logger::LogD(const std::string& message) {
+    LogEntry logEntry;
+    logEntry.type = LOG_INFO;
+    logEntry.level = LOG_LEVEL_DEBUG;
+    logEntry.message = "LOG_D: [" + CurrentDateTimeToString() + "]: " + message;
+    if (level == LOG_LEVEL_DEBUG) {
+        std::cout << "\x1B[32m" << logEntry.message << "\033[0m" << std::endl;
+    }
+}
+
+void Logger::LogT(const std::string& message) {
+    LogEntry logEntry;
+    logEntry.type = LOG_INFO;
+    logEntry.level = LOG_LEVEL_TEST;
+    logEntry.message = "LOG_T: [" + CurrentDateTimeToString() + "]: " + message;
+    if (level == LOG_LEVEL_TEST) {
+        std::cout << "\x1B[36m" << logEntry.message << "\033[0m" << std::endl;
+    }
     messages.push_back(logEntry);
 }
 

@@ -24,7 +24,7 @@ public:
     void OnKeyPressed(KeyPressedEvent& event) {
         std::string keyCode = std::to_string(event.symbol);
         std::string keySymbol(1, event.symbol);
-        Logger::Log("Key pressed event emitted: [" + keyCode + "] " + keySymbol);
+        Logger::LogT("Key pressed event emitted: [" + keyCode + "] " + keySymbol);
         for (auto entity : GetSystemEntities()) {
             const auto keyboardControl = entity.GetComponent<KeyboardControlComponent>();
             auto& sprite = entity.GetComponent<SpriteComponent>();

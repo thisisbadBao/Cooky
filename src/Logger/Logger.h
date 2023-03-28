@@ -10,16 +10,24 @@ enum LogType {
     LOG_ERROR
 };
 
+enum LogLevel {
+    LOG_LEVEL_DEBUG,
+    LOG_LEVEL_TEST
+};
+
 struct LogEntry {
     LogType type;
+    LogLevel level;
     std::string message;
-    // TODO: Add log level
 };
 
 class Logger {
 public:
+    static LogLevel level;
     static std::vector<LogEntry> messages;
     static void Log(const std::string &message);
+    static void LogD(const std::string &message);
+    static void LogT(const std::string &message);
     static void Err(const std::string &message);
 };
 

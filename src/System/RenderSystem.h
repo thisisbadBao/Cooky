@@ -4,7 +4,7 @@
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/SpriteComponent.h"
-#include "../AssetStore/AssetStore.h"
+#include "../AssetManager/AssetManager.h"
 #include <SDL2/SDL.h>
 
 struct RenderableEntity {
@@ -20,7 +20,7 @@ public:
         RequireComponent<SpriteComponent>();
     }
 
-    void Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore, SDL_Rect camera) {
+    void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetManager, SDL_Rect camera) {
         // Sort all the entities by z-index
         std::vector<RenderableEntity> renderableEntities;
         for (auto entity : GetSystemEntities())
@@ -60,7 +60,7 @@ public:
 
             SDL_RenderCopyEx(
                 renderer,
-                assetStore->GetTexture(sprite.assetId),
+                assetManager->GetTexture(sprite.assetId),
                 &srcRect,
                 &dstRect,
                 transform.rotation,
