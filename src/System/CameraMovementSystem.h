@@ -1,5 +1,4 @@
-#ifndef CAMERAMOVEMENTSYSTEM_H
-#define CAMERAMOVEMENTSYSTEM_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -31,5 +30,3 @@ public:
         }
     }
 };
-
-#endif

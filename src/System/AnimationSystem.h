@@ -1,5 +1,4 @@
-#ifndef ANIMATIONSYSTEM_H
-#define ANIMATIONSYSTEM_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -26,5 +25,3 @@ public:
         }
     }
 };
-
-#endif

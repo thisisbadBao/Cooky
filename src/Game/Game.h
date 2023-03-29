@@ -1,5 +1,4 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 #include <SDL2/SDL.h>
 #include <sol/sol.hpp>
@@ -41,5 +40,3 @@ public:
     static int mapWidth;
     static int mapHeight;
 };
-
-#endif

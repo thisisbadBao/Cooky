@@ -1,5 +1,4 @@
-#ifndef ECS_H
-#define ECS_H
+#pragma once
 
 #include <bitset>
 #include <vector>
@@ -232,6 +231,7 @@ template <typename TComponent>
 void System::RequireComponent() {
     const auto componentId = Component<TComponent>::GetId();
     componentSignature.set(componentId);
+    Logger::LogD(std::string(typeid(TComponent).name()) + " was required.");
 }
 
 // Registry functions
@@ -337,5 +337,3 @@ template <typename TComponent>
 TComponent& Entity::GetComponent() const {
     return registry->GetComponent<TComponent>(*this);
 }
-
-#endif

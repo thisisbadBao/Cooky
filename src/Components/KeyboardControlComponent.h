@@ -1,20 +1,17 @@
-#ifndef KEYBOARDCONTROLCOMPONENT_H
-#define KEYBOARDCONTROLCOMPONENT_H
+#pragma once
 
-#include <glm/glm.hpp>
+#include "../Utils/CookyUtils.h"
 
 struct KeyboardControlComponent {
-    glm::vec2 upVelocity;
-    glm::vec2 rightVelocity;
-    glm::vec2 downVelocity;
-    glm::vec2 leftVelocity;
-    KeyboardControlComponent(glm::vec2 upVelocity = glm::vec2(0), glm::vec2 rightVelocity = glm::vec2(0), 
-        glm::vec2 downVelocity = glm::vec2(0), glm::vec2 leftVelocity = glm::vec2(0)) {
+    Vec2 upVelocity;
+    Vec2 rightVelocity;
+    Vec2 downVelocity;
+    Vec2 leftVelocity;
+    KeyboardControlComponent(Vec2 upVelocity = Vec2::Zero, Vec2 rightVelocity = Vec2::Zero, 
+        Vec2 downVelocity = Vec2::Zero, Vec2 leftVelocity = Vec2::Zero) {
         this->upVelocity = upVelocity;
         this->rightVelocity = rightVelocity;
         this->downVelocity = downVelocity;
         this->leftVelocity = leftVelocity;
     }
 };
-
-#endif

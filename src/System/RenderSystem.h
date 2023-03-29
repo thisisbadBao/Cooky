@@ -1,5 +1,4 @@
-#ifndef RENDERSYSTEM_H
-#define RENDERSYSTEM_H
+#pragma once
 
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
@@ -14,8 +13,7 @@ struct RenderableEntity {
 
 class RenderSystem: public System {
 public:
-    RenderSystem()
-    {
+    RenderSystem() {
         RequireComponent<TransformComponent>();
         RequireComponent<SpriteComponent>();
     }
@@ -70,5 +68,3 @@ public:
         }
     }
 };
-
-#endif

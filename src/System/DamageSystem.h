@@ -1,5 +1,4 @@
-#ifndef DAMAGESYSTEM_H
-#define DAMAGESYSTEM_H
+#pragma once
 
 #include "../ECS/ECS.h"
 
@@ -29,6 +28,3 @@ public:
 
     }
 };
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef EVENTBUS_H
-#define EVENTBUS_H
+#pragma once
 
 #include "SDL2/SDL.h"
 #include <map>
@@ -85,5 +84,3 @@ public:
         subscribers.clear();
     }
 };
-
-#endif

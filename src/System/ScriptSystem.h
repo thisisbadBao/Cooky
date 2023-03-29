@@ -1,7 +1,6 @@
-#ifndef SCRIPTSYSTEM_H
-#define SCRIPTSYSTEM_H
+#pragma once
 
-#include <glm/glm.hpp>
+#include "../Utils/CookyUtils.h"
 #include <SDL2/SDL.h>
 
 #include "../ECS/ECS.h"
@@ -11,18 +10,27 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/TransformComponent.h"
 
-void LuaBinding_AddTransform(Entity entity, glm::vec2 position = glm::vec2(0,0),
-    glm::vec2 scale = glm::vec2(1,1), double rotation = 0.0) {
+void LuaBinding_AddTransform(Entity entity,
+                             Vec2 position = Vec2(0,0),
+                             Vec2 scale = Vec2(1,1),
+                             double rotation = 0.0) {
     entity.AddComponent<TransformComponent>(position, scale, rotation);
     Logger::LogT("Add transform component");
 }
 
-void LuaBinding_AddSprite(Entity entity, const std::string& assetId = "", int width = 0, int height = 0,
-    int zIndex = 0, bool isFixed = false, int srcRectX = 0, int srcRectY = 0) {
+void LuaBinding_AddSprite(Entity entity,
+                          const std::string& assetId = "",
+                          int width = 0,
+                          int height = 0,
+                          int zIndex = 0,
+                          bool isFixed = false,
+                          int srcRectX = 0,
+                          int srcRectY = 0) {
     entity.AddComponent<SpriteComponent>(assetId, width, height, zIndex, isFixed, srcRectX, srcRectY);
+    Logger::LogT("Add sprite component");
 }
 
-void LuaBinding_AddRigidBody(Entity entity, glm::vec2 velocity = glm::vec2(0.0, 0.0)) {
+void LuaBinding_AddRigidBody(Entity entity, Vec2 velocity = Vec2(0.0, 0.0)) {
     entity.AddComponent<RigidBodyComponent>(velocity);
 }
 
@@ -47,8 +55,11 @@ public:
             "hasTag", &Entity::HasTag,
             "group", &Entity::Group,
             "groupOf", &Entity::BelongsToGroup,
-            "addTransform", LuaBinding_AddTransform,
-            "addSprite", LuaBinding_AddSprite,
+            "addTransform", &Entity::AddComponent<TransformComponent>,
+            "removeTransform", &Entity::RemoveComponent<TransformComponent>,
+            "hasTransform", &Entity::HasComponent<TransformComponent>,
+
+            "addSprite", &Entity::AddComponent<SpriteComponent>,
             "addRigidBody", LuaBinding_AddRigidBody
         );
         lua.set_function("test", Test);
@@ -71,5 +82,3 @@ public:
         }
     }
 };
-
-#endif

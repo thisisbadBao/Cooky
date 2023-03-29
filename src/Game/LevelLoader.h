@@ -1,5 +1,4 @@
-#ifndef LEVELLOADER_H
-#define LEVELLOADER_H
+#pragma once
 
 #include <memory>
 #include <SDL2/SDL.h>
@@ -14,5 +13,3 @@ public:
     ~LevelLoader();
     void LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager, SDL_Renderer* renderer, int levelNumber);
 };
-
-#endif

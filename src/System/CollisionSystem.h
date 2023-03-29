@@ -1,5 +1,4 @@
-#ifndef COLLISIONSYSTEM_H
-#define COLLISIONSYSTEM_H
+#pragma once
 
 #include "../ECS/ECS.h"
 
@@ -62,5 +61,3 @@ public:
         );
     }
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef SCRIPTCOMPONENT_H
-#define SCRIPTCOMPONENT_H
+#pragma once
 
 #include <sol/sol.hpp>
 
@@ -10,5 +9,3 @@ struct ScriptComponent {
         this->func = func;
     }
 };
-
-#endif

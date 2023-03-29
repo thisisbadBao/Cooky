@@ -1,9 +1,6 @@
-#ifndef EVENT_H
-#define EVENT_H
+#pragma once
 
 class Event {
 public:
     Event() = default;
 };
-
-#endif

@@ -80,7 +80,7 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
             mapFile.ignore();
 
             Entity tile = registry->CreateEntity();
-            tile.AddComponent<TransformComponent>(glm::vec2(x * (mapScale * tileSize), y * (mapScale * tileSize)), glm::vec2(mapScale, mapScale), 0.0);
+            tile.AddComponent<TransformComponent>(Vec2(x * (mapScale * tileSize), y * (mapScale * tileSize)), Vec2(mapScale, mapScale), 0.0);
             tile.AddComponent<SpriteComponent>(mapTextureAssetId, tileSize, tileSize, 0, false, srcRectX, srcRectY);
         }
     }
@@ -120,11 +120,11 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
             sol::optional<sol::table> transform = entity["components"]["transform"];
             if (transform != sol::nullopt) {
                 newEntity.AddComponent<TransformComponent>(
-                    glm::vec2(
+                    Vec2(
                         entity["components"]["transform"]["position"]["x"],
                         entity["components"]["transform"]["position"]["y"]
                     ),
-                    glm::vec2(
+                    Vec2(
                         entity["components"]["transform"]["scale"]["x"].get_or(1.0),
                         entity["components"]["transform"]["scale"]["y"].get_or(1.0)
                     ),
@@ -136,7 +136,7 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
             sol::optional<sol::table> rigidbody = entity["components"]["rigidbody"];
             if (rigidbody != sol::nullopt) {
                 newEntity.AddComponent<RigidBodyComponent>(
-                    glm::vec2(
+                    Vec2(
                         entity["components"]["rigidbody"]["velocity"]["x"].get_or(0.0),
                         entity["components"]["rigidbody"]["velocity"]["y"].get_or(0.0)
                     )
@@ -173,7 +173,7 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
                 newEntity.AddComponent<BoxColliderComponent>(
                     entity["components"]["boxcollider"]["width"],
                     entity["components"]["boxcollider"]["height"],
-                    glm::vec2(
+                    Vec2(
                         entity["components"]["boxcollider"]["offset"]["x"].get_or(0),
                         entity["components"]["boxcollider"]["offset"]["y"].get_or(0)
                     )
@@ -190,19 +190,19 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
             sol::optional<sol::table> keyboardControlled = entity["components"]["keyboard_controller"];
             if (keyboardControlled != sol::nullopt) {
                 newEntity.AddComponent<KeyboardControlComponent>(
-                    glm::vec2(
+                    Vec2(
                         entity["components"]["keyboard_controller"]["up_velocity"]["x"],
                         entity["components"]["keyboard_controller"]["up_velocity"]["y"]
                     ),
-                    glm::vec2(
+                    Vec2(
                         entity["components"]["keyboard_controller"]["right_velocity"]["x"],
                         entity["components"]["keyboard_controller"]["right_velocity"]["y"]
                     ),
-                    glm::vec2(
+                    Vec2(
                         entity["components"]["keyboard_controller"]["down_velocity"]["x"],
                         entity["components"]["keyboard_controller"]["down_velocity"]["y"]
                     ),
-                    glm::vec2(
+                    Vec2(
                         entity["components"]["keyboard_controller"]["left_velocity"]["x"],
                         entity["components"]["keyboard_controller"]["left_velocity"]["y"]
                     )

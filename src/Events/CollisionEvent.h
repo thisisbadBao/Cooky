@@ -1,5 +1,4 @@
-#ifndef COLLISIONENVET_H
-#define COLLISIONENVET_H
+#pragma once
 
 #include "../ECS/ECS.h"
 #include "../EventBus/Event.h"
@@ -10,5 +9,3 @@ public:
     Entity b;
     CollisionEvent(Entity a, Entity b): a(a), b(b) {}
 };
-
-#endif

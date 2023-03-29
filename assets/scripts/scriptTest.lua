@@ -5,6 +5,6 @@ addTexture("tank", "./assets/images/tank-tiger-right.png")
 
 entity = createEntity()
 
-entity:addSprite("tank", 32, 32, 2, false, 0, 0)
+entity:addSprite("tank", 32, 32, 2, false)
 
 print("id: " .. entity:getId())

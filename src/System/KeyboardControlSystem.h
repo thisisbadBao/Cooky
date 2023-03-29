@@ -1,5 +1,4 @@
-#ifndef KEYBOARDCONTROLSYSTEM_H
-#define KEYBOARDCONTROLSYSTEM_H
+#pragma once
 
 #include "../ECS/ECS.h"
 #include "../Components/KeyboardControlComponent.h"
@@ -58,5 +57,3 @@ public:
 
     }
 };
-
-#endif

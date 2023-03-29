@@ -1,8 +1,5 @@
-#ifndef CAMERAFOLLOWCOMPONENT_H
-#define CAMERAFOLLOWCOMPONENT_H
+#pragma once
 
 struct CameraFollowComponent {
     CameraFollowComponent() = default;
 };
-
-#endif

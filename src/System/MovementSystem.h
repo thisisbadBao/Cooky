@@ -1,5 +1,4 @@
-#ifndef MOVEMENTSYSTEM_H
-#define MOVEMENTSYSTEM_H
+#pragma once
 
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
@@ -70,5 +69,3 @@ public:
         }
     }
 };
-
-#endif

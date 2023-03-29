@@ -1,5 +1,4 @@
-#ifndef RENDERTEXTSYSTEM_H
-#define RENDERTEXTSYSTEM_H
+#pragma once
 
 #include "../ECS/ECS.h"
 #include "../AssetManager/AssetManager.h"
@@ -39,5 +38,3 @@ public:
         }
     }
 };
-
-#endif

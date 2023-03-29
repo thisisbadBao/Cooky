@@ -1,5 +1,4 @@
-#ifndef RENDERCOLLIDERSYSTEM_H
-#define RENDERCOLLIDERSYSTEM_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -33,5 +32,3 @@ public:
         }
     }
 };
-
-#endif

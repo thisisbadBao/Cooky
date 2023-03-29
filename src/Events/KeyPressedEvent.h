@@ -1,5 +1,4 @@
-#ifndef KEYPRESSEDEVENT_H
-#define KEYPRESSEDEVENT_H
+#pragma once
 
 #include "../ECS/ECS.h"
 #include "SDL2/SDL.h"
@@ -11,5 +10,3 @@ public:
     SDL_Keycode symbol;
     KeyPressedEvent(SDL_Keycode symbol): symbol(symbol) {}
 };
-
-#endif

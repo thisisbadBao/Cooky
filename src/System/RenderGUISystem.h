@@ -1,5 +1,4 @@
-#ifndef RENDERGUISYSTEM_H
-#define RENDERGUISYSTEM_H
+#pragma once
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_sdl.h>
@@ -25,8 +24,8 @@ public:
             if (ImGui::Button("Create new enenmy")) {
                 Entity tank = registry->CreateEntity();
                 tank.Group("enemy");
-                tank.AddComponent<TransformComponent>(glm::vec2(posX, posY), glm::vec2(2.0, 2.0), 0.0);
-                tank.AddComponent<RigidBodyComponent>(glm::vec2(100.0, 0.0));
+                tank.AddComponent<TransformComponent>(Vec2(posX, posY), Vec2(2.0, 2.0), 0.0);
+                tank.AddComponent<RigidBodyComponent>(Vec2(100.0, 0.0));
                 tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 2);
                 tank.AddComponent<BoxColliderComponent>(32, 32);
             }
@@ -49,5 +48,3 @@ public:
         ImGuiSDL::Render(ImGui::GetDrawData());
     }
 };
-
-#endif
