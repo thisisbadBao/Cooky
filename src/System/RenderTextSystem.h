@@ -15,10 +15,12 @@ public:
     void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetManager, SDL_Rect camera) {
         for (auto entity : GetSystemEntities()) {
             const auto textLabel = entity.GetComponent<TextLabelComponent>();
+            Vec3 color = textLabel.color;
+            const SDL_Color _color = {static_cast<Uint8>(color.x), static_cast<Uint8>(color.y), static_cast<Uint8>(color.z)};
             SDL_Surface *surface = TTF_RenderText_Blended(
                 assetManager->GetFont(textLabel.assetId),
                 textLabel.text.c_str(),
-                textLabel.color
+                _color
             );
 
             SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);

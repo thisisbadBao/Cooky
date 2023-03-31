@@ -8,11 +8,11 @@ struct TextLabelComponent {
     Vec2 position;
     std::string text;
     std::string assetId;
-    SDL_Color color;
+    Vec3 color;
     bool isFixed;
 
     TextLabelComponent(Vec2 position = Vec2::Zero, std::string text = "",
-    std::string assetId = "", const SDL_Color& color = {0, 0, 0}, bool isFixed = true) {
+    std::string assetId = "", Vec3 color = Vec3::Zero, bool isFixed = true) {
         this->position = position;
         this->text = text;
         this->assetId = assetId;

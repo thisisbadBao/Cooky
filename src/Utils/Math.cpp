@@ -19,3 +19,20 @@ Vec2 Vec2::operator-(const Vec2& other) const {
 float Vec2::dot(const Vec2& other) const {
     return x * other.x + y * other.y;
 }
+
+const Vec3 Vec3::Zero(0, 0, 0);
+
+Vec3& Vec3::operator=(const Vec3& other) {
+    this->x = other.x;
+    this->y = other.y;
+    this->z = other.z;
+    return *this;
+}
+
+Vec3 Vec3::operator+(const Vec3& other) const {
+    return Vec3(x + other.x, y + other.y, z + other.z);
+}
+
+Vec3 Vec3::operator-(const Vec3& other) const {
+    return Vec3(x - other.x, y - other.y, z - other.z);
+}

@@ -11,7 +11,7 @@ SRC_FILES = ./src/*.cpp \
 			./src/Utils/*.cpp \
 			./libs/imgui/*.cpp
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -llua
-OBJ_NAME = engine
+OBJ_NAME = Cooky
 
 # Some rules
 build:

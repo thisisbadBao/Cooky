@@ -6,6 +6,7 @@
 
 # Ignore build file
 build*/
+Cooky
 engine
 
 # Ignore imgui ini file

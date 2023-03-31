@@ -9,11 +9,8 @@ vec3 = vec1 + vec2
 
 
 -- Asset Test
-addFont("charriot-font-20", "./assets/fonts/charriot.ttf", 20)
+addFont("charriot-font-20", "./assets/fonts/charriot.ttf", 30)
 addTexture("tank", "./assets/images/tank-tiger-right.png")
-
-local i = 1
-
 
 -- Entity Test
 entity = createEntity()
@@ -28,9 +25,19 @@ transform = entity:getTransform()
 
 print("transform: " .. tostring(transform.position.x))
 
+text = createEntity()
+text:addText(Vec2.new(300, 60), "COOKY V0.0.1", "charriot-font-20", Vec3.new(224, 224, 224), true)
+
+
+local i = 1
 function update()
     transform.position.x = transform.position.x + 1
     transform.rotation = transform.rotation + 2
+    if i % 10 == 0 then
+        text:getText().text = text:getText().text .. "1"
+        text:getText().color = Vec3.new(77 + i, 208 + i, 225 + i)
+    end
+    i = i + 1
 end
 
 -- print("id: " .. entity:getId())
