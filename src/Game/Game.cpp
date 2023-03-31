@@ -20,7 +20,7 @@
 #include "../System/RenderTextSystem.h"
 #include "../System/RenderGUISystem.h"
 #include "../System/ScriptSystem.h"
-#include "../Game/LevelLoader.h"
+#include "../Game/ScriptLoader.h"
 
 int Game::windowWidth;
 int Game::windowHeight;
@@ -75,6 +75,7 @@ void Game::Initialize() {
         Logger::Err("Error creating SDL renderer.");
         return;
     }
+    assetManager->SetRenderer(renderer);
 
     // Init ImGui context
     ImGui::CreateContext();
@@ -140,9 +141,9 @@ void Game::Setup() {
     // Create the Lua binding
     registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager, renderer);
 
-    LevelLoader loader;
+    ScriptLoader scriptLoader;
     lua.open_libraries(sol::lib::base, sol::lib::math);
-    loader.LoadLevel(lua, registry, assetManager, renderer, 1);
+    scriptLoader.LoadScript(lua, registry, assetManager, renderer, 1);
 }
 
 // Update game object

@@ -23,13 +23,18 @@ void AssetManager::ClearAssets() {
     fonts.clear();
 }
 
-void AssetManager::AddTexture(SDL_Renderer* renderer,
-                              const std::string& assetId,
-                              const std::string& filePath) {
+void AssetManager::SetRenderer(SDL_Renderer *renderer) {
+    this->renderer = renderer;
+}
+
+void AssetManager::AddTexture(const std::string& assetId, const std::string& filePath) {
+    if (!renderer) {
+        Logger::Err("Add texture: \" " + assetId + " \" failed because SDL renderer is nullptr.");
+        return;
+    }
     SDL_Surface* surface = IMG_Load(filePath.c_str());
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
-
     textures.emplace(assetId, texture);
 }
 
@@ -45,4 +50,8 @@ void AssetManager::AddFont(const std::string& assetId,
 
 TTF_Font* AssetManager::GetFont(const std::string& assetId) {
     return fonts[assetId];
+}
+
+int AssetManager::getTexSize() {
+    return textures.size();
 }
