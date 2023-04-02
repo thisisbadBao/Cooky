@@ -7,7 +7,8 @@
 #include "../AssetManager/AssetManager.h"
 #include "../Components/ScriptComponent.h"
 #include "../Components/SpriteComponent.h"
-#include "../Components/TransformComponent.h"
+#include "../Components/TextLabelComponent.h"
+#include "../Components/RigidBodyComponent.h"
 #include "../Utils/CookyUtils.h"
 
 void LuaBinding_AddTransform(Entity entity,
@@ -23,9 +24,8 @@ void LuaBinding_AddSprite(Entity entity,
                           int height = 0,
                           int zIndex = 0,
                           bool isFixed = false,
-                          int srcRectX = 0,
-                          int srcRectY = 0) {
-    entity.AddComponent<SpriteComponent>(assetId, width, height, zIndex, isFixed, srcRectX, srcRectY);
+                          Vec2 srcRect = Vec2::Zero) {
+    entity.AddComponent<SpriteComponent>(assetId, width, height, zIndex, isFixed, srcRect);
 }
 
 void LuaBinding_AddRigidBody(Entity entity, Vec2 velocity = Vec2::Zero) {
@@ -77,7 +77,7 @@ void New_Usertype_Transform(sol::state& lua) {
 void New_Usertype_Sprite(sol::state& lua) {
     lua.new_usertype<SpriteComponent>(
         "Sprite",
-        sol::constructors<SpriteComponent(std::string assetIdm, int width, int height, int zIndex, bool isFixed, int srcRectX, int srcRectY)>(),
+        sol::constructors<SpriteComponent(std::string assetIdm, int width, int height, int zIndex, bool isFixed, Vec2 srcRect)>(),
         "assetId", &SpriteComponent::assetId,
         "width", &SpriteComponent::width,
         "height", &SpriteComponent::height,
@@ -89,12 +89,20 @@ void New_Usertype_Sprite(sol::state& lua) {
 void New_Usertype_Text(sol::state& lua) {
     lua.new_usertype<TextLabelComponent>(
         "Text",
-        sol::constructors<TextLabelComponent(Vec2 position , std::string text, std::string assetId, Vec3 color, bool isFixed)>(),
+        sol::constructors<TextLabelComponent(Vec2 position, std::string text, std::string assetId, Vec3 color, bool isFixed)>(),
         "position", &TextLabelComponent::position,
         "text", &TextLabelComponent::text,
         "assetId", &TextLabelComponent::assetId,
         "color", &TextLabelComponent::color,
         "isFixed", &TextLabelComponent::isFixed
+    );
+}
+
+void New_Usertype_RigidBody(sol::state& lua) {
+    lua.new_usertype<RigidBodyComponent>(
+        "RigidBody",
+        sol::constructors<RigidBodyComponent(Vec2 velocity)>(),
+        "velocity", &RigidBodyComponent::velocity
     );
 }
 
@@ -119,7 +127,11 @@ void New_Usertype_Entity(sol::state& lua) {
         "addText", LuaBinding_AddText,
         "removeText", &Entity::RemoveComponent<TextLabelComponent>,
         "hasText", &Entity::HasComponent<TextLabelComponent>,
-        "getText", &Entity::GetComponent<TextLabelComponent>
+        "getText", &Entity::GetComponent<TextLabelComponent>,
+        "addRigidBody", LuaBinding_AddRigidBody,
+        "removeRigidBody", &Entity::RemoveComponent<RigidBodyComponent>,
+        "hasRigidBody", &Entity::HasComponent<RigidBodyComponent>,
+        "getRigidBody", &Entity::GetComponent<RigidBodyComponent>
     );
 }
 
@@ -139,8 +151,9 @@ public:
         New_Usertype_Vec2(lua);
         New_Usertype_Vec3(lua);
         New_Usertype_Transform(lua);
-        New_Usertype_Sprite(lua),
-        New_Usertype_Text(lua),
+        New_Usertype_Sprite(lua);
+        New_Usertype_Text(lua);
+        New_Usertype_RigidBody(lua);
 
         lua.set_function("test", Test);
 
@@ -148,12 +161,10 @@ public:
 
         lua.set_function("addTexture", [&](std::string id, std::string file) {
             assetManager->AddTexture(id, file); 
-            Logger::LogT("add texture: " + id + ", file: " + file);
         });
 
         lua.set_function("addFont", [&](std::string id, std::string file, int fontSize) {
             assetManager->AddFont(id, file, fontSize);
-            Logger::LogT("add font: " + id);
         });
     }
 

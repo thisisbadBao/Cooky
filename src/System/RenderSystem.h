@@ -48,13 +48,12 @@ public:
             const TransformComponent transform = entity.transformComponent;
             const SpriteComponent sprite = entity.spriteComponent;
 
-            SDL_Rect srcRect = sprite.srcRect;
+            SDL_Rect srcRect = {static_cast<int>(sprite.srcRect.x), static_cast<int>(sprite.srcRect.y), sprite.width, sprite.height};
             SDL_Rect dstRect = {
                 static_cast<int>(transform.position.x - (sprite.isFixed ? 0 : camera.x)),
                 static_cast<int>(transform.position.y - (sprite.isFixed ? 0 : camera.y)),
                 static_cast<int>(sprite.width * transform.scale.x),
-                static_cast<int>(sprite.height * transform.scale.y)
-            };
+                static_cast<int>(sprite.height * transform.scale.y)};
 
             SDL_RenderCopyEx(
                 renderer,
@@ -63,7 +62,7 @@ public:
                 &dstRect,
                 transform.rotation,
                 NULL,
-                sprite.flip
+                sprite.flip == FLIP_NONE ? SDL_FLIP_NONE : (sprite.flip == FLIP_VERTICAL ? SDL_FLIP_VERTICAL : SDL_FLIP_HORIZONTAL)
             );
         }
     }

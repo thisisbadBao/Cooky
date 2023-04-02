@@ -143,7 +143,7 @@ void Game::Setup() {
 
     ScriptLoader scriptLoader;
     lua.open_libraries(sol::lib::base, sol::lib::math);
-    scriptLoader.LoadScript(lua, registry, assetManager, renderer, 1);
+    scriptLoader.LoadScript(lua, registry, assetManager);
 }
 
 // Update game object

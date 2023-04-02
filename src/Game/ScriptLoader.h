@@ -11,5 +11,5 @@ class ScriptLoader {
 public:
     ScriptLoader();
     ~ScriptLoader();
-    void LoadScript(sol::state& lua, const std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager, SDL_Renderer* renderer, int levelNumber);
+    void LoadScript(sol::state& lua, const std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager);
 };

@@ -40,10 +40,11 @@ public:
 
             if (rigidbody.velocity.x != 0) {
                 rigidbody.velocity.x *= -1;
-                sprite.flip = (sprite.flip == SDL_FLIP_NONE ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+                sprite.flip = (sprite.flip == FLIP_NONE ? FLIP_HORIZONTAL : FLIP_NONE);
             }
             if (rigidbody.velocity.y != 0) {
                 rigidbody.velocity.y *= -1;
+                sprite.flip = (sprite.flip == FLIP_NONE) ? FLIP_VERTICAL : FLIP_NONE;
             }
         }
     }

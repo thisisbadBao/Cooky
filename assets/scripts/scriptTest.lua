@@ -15,18 +15,73 @@ addTexture("tank", "./assets/images/tank-tiger-right.png")
 -- Entity Test
 entity = createEntity()
 
-entity:addSprite("tank", 32, 32, 2, false, 0, 0)
+entity:addSprite("tank", 32, 32, 2, false, Vec2.new(0, 0))
 entity:addTransform(Vec2.new(200, 200), Vec2.new(1, 1), 0)
 
 local has = entity:hasTransform()
-print("has: " .. tostring(has))
+-- print("has: " .. tostring(has))
 
 transform = entity:getTransform()
 
-print("transform: " .. tostring(transform.position.x))
+-- print("transform: " .. tostring(transform.position.x))
 
 text = createEntity()
 text:addText(Vec2.new(300, 60), "COOKY V0.0.1", "charriot-font-20", Vec3.new(224, 224, 224), true)
+
+Def = {
+    assets = {
+        [0] =
+        { type = "texture", id = "chopper-texture", file = "./assets/images/chopper-spritesheet.png" },
+        { type = "texture", id = "truck-texture", file = "./assets/images/truck-ford-right.png" },
+        { type = "texture", id = "rader-texture", file = "./assets/images/radar.png" },
+        { type = "font", id = "pico-font-5", file = "./assets/fonts/pico8.ttf", font_size = 5 },
+        { type = "font", id = "pico-font-10", file = "./assets/fonts/pico8.ttf", font_size = 10 },
+    },
+
+    entities = {
+        [0] =
+        {
+            tag = "player",
+            components = {
+                transform = {
+                    position = { x = 242, y = 110 },
+                    scale = { x = 1.0, y = 1.0 },
+                    rotation = 0.0, -- degrees
+                },
+                rigidbody = {
+                    velocity = { x = 0.0, y = 0.0 }
+                },
+                sprite = {
+                    texture_asset_id = "chopper-texture",
+                    width = 32,
+                    height = 32,
+                    z_index = 4,
+                    fixed = false,
+                    src_rect = { x = 0, y = 0 }
+                },
+                animation = {
+                    num_frames = 2,
+                    fps = 9,
+                    isLoop = true
+                },
+                boxcollider = {
+                    offset = { x = 0, y = 5 },
+                    width = 32,
+                    height = 25
+                },
+                keyboard_controller = {
+                    up_velocity = { x = 0, y = -180 },
+                    right_velocity = { x = 180, y = 0 },
+                    down_velocity = { x = 0, y = 180 },
+                    left_velocity = { x = -180, y = 0 },
+                },
+                camera_follow = {
+                    follow = true
+                }
+            }
+        }
+    } -- end of entities
+}
 
 
 local i = 1

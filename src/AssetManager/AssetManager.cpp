@@ -36,6 +36,7 @@ void AssetManager::AddTexture(const std::string& assetId, const std::string& fil
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
     textures.emplace(assetId, texture);
+    Logger::LogT("Add new texture: " + assetId);
 }
 
 SDL_Texture* AssetManager::GetTexture(const std::string& assetId) {
@@ -46,6 +47,7 @@ void AssetManager::AddFont(const std::string& assetId,
                            const std::string& filePath,
                            int fontSize) {
     fonts.emplace(assetId, TTF_OpenFont(filePath.c_str(), fontSize));
+    Logger::LogT("Add new font: " + assetId);
 }
 
 TTF_Font* AssetManager::GetFont(const std::string& assetId) {

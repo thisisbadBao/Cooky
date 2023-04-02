@@ -1,8 +1,9 @@
 #pragma once
 
 #include <string>
-#include "../Utils/CookyUtils.h"
 #include <SDL2/SDL.h>
+
+#include "../Utils/CookyUtils.h"
 
 struct TextLabelComponent {
     Vec2 position;
