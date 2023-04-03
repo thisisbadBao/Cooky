@@ -41,27 +41,40 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
     }
 
     // Read definitions of assets and entities from script
+    sol::optional<sol::table> hasDef = lua["Def"];
+    if (hasDef == sol::nullopt) {
+        return;
+    }
     sol::table def = lua["Def"];
 
-    sol::table assets = def["assets"];
     int i = 0;
-    while (true) {
-        sol::optional<sol::table> hasAsset = assets[i];
-        if (hasAsset == sol::nullopt) {
-            break;
-        }
-        sol::table asset = assets[i];
-        std::string assetType = asset["type"];
-        std::string assetId = asset["id"];
-        if (assetType == "texture") {
-            assetManager->AddTexture(assetId, asset["file"]);
-        }
-        if (assetType == "font") {
-            assetManager->AddFont(assetId, asset["file"], asset["font_size"]);
-        }
-        i++;
-    }
 
+    sol::optional<sol::table> hasAssets = def["assets"];
+    if (hasAssets != sol::nullopt) {
+        sol::table assets = def["assets"];
+        while (true) {
+            sol::optional<sol::table> hasAsset = assets[i];
+            if (hasAsset == sol::nullopt) {
+                break;
+            }
+            sol::table asset = assets[i];
+            std::string assetType = asset["type"];
+            std::string assetId = asset["id"];
+            if (assetType == "texture") {
+                assetManager->AddTexture(assetId, asset["file"]);
+            }
+            if (assetType == "font") {
+                assetManager->AddFont(assetId, asset["file"], asset["font_size"]);
+            }
+            i++;
+        }
+    }
+    
+
+    sol::optional<sol::table> hasEntities = def["entities"];
+    if (hasEntities == sol::nullopt) {
+        return;
+    }
     sol::table entities = def["entities"];
     i = 0;
     while (true) {

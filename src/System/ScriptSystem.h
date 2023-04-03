@@ -121,6 +121,7 @@ void New_Usertype_Entity(sol::state& lua) {
         "hasTransform", &Entity::HasComponent<TransformComponent>,
         "getTransform", &Entity::GetComponent<TransformComponent>,
         "addSprite", LuaBinding_AddSprite,
+        "setSprite", &Entity::SetComponentOn<SpriteComponent>,
         "removeSprite", &Entity::RemoveComponent<SpriteComponent>,
         "hasSprite", &Entity::HasComponent<SpriteComponent>,
         "getSprite", &Entity::GetComponent<SpriteComponent>,

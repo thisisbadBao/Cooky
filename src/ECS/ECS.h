@@ -54,6 +54,7 @@ public:
     bool operator<(const Entity& other) const { return other.GetId() < id; }
 
     template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
+    template <typename TComponent> void SetComponentOn(bool on);
     template <typename TComponent> void RemoveComponent();
     template <typename TComponent> bool HasComponent() const;
     template <typename TComponent> TComponent& GetComponent() const;
@@ -137,6 +138,7 @@ public:
         int indexToRemove = entityToIndex[entityId];
         int lastIndex = size - 1;
         data[indexToRemove] = data[lastIndex];
+        // TODO: remove data[lastIndex]
 
         // Update the entity-index map
         int lastEntityId = indexToEntity[lastIndex];
@@ -198,6 +200,7 @@ public:
 
     // Component management
     template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
+    template <typename TComponent> void SetComponentOn(Entity entity, bool on);
     template <typename TComponent> void RemoveComponent(Entity entity);
     template <typename TComponent> bool HasComponent(Entity entity) const;
     template <typename TComponent> TComponent& GetComponent(Entity entity) const;
@@ -290,7 +293,44 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args) {
 }
 
 template <typename TComponent>
-void Registry::RemoveComponent(Entity entity){
+void Registry::SetComponentOn(Entity entity, bool on) {
+    if (!entity.HasComponent<TComponent>()) {
+        Logger::Err("Component <" + std::string(typeid(TComponent).name()) + "> should be added by \"AddComponent\" before setting On or Off");
+    }
+
+    const auto componentId = Component<TComponent>::GetId();
+
+    // If no pool for TComponent
+    if (!componentPools[componentId]) {
+        Logger::Err("Component pool " + std::string(typeid(TComponent).name()) + " should be added by \"AddComponent\" before setting On or Off");
+    }
+
+    const auto entityId = entity.GetId();
+
+    // If component has already been set on(or off)
+    if ((on && entityComponentSignatures[entityId].test(componentId)) ||
+        (!on && !entityComponentSignatures[entityId].test(componentId))) {
+        Logger::Err("component has already been set on or off " + std::to_string(on));
+        return;
+    }
+
+    // To turn on(or off) the component for the entity
+    entityComponentSignatures[entityId].set(componentId, on);
+
+    for (auto &system : systems) {
+        const auto& systemComponentSignature = system.second->GetComponentSignature();
+        bool isInterested = (entityComponentSignatures[entityId] & systemComponentSignature) == systemComponentSignature;
+        if (isInterested && !on) {
+            system.second->RemoveEntityFromSystem(entity);
+            entitiesToBeAdded.erase(entity);
+        } else if (isInterested && on) {
+            system.second->AddEntityToSystem(entity);
+        }
+    }
+}
+
+template <typename TComponent>
+void Registry::RemoveComponent(Entity entity) {
     const auto componentId = Component<TComponent>::GetId();
     const auto entityId = entity.GetId();
 
@@ -321,6 +361,11 @@ TComponent& Registry::GetComponent(Entity entity) const {
 template <typename TComponent, typename ...TArgs>
 void Entity::AddComponent(TArgs&& ...args) {
     registry->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...);
+}
+
+template <typename TComponent>
+void Entity::SetComponentOn(bool on) {
+    registry->SetComponentOn<TComponent>(*this, on);
 }
 
 template <typename TComponent>

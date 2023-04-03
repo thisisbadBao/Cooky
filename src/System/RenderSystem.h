@@ -23,6 +23,7 @@ public:
         std::vector<RenderableEntity> renderableEntities;
         for (auto entity : GetSystemEntities())
         {
+            // Logger::Log("entity" + std::to_string(entity.GetId()));
             RenderableEntity renderableEntity;
             renderableEntity.transformComponent = entity.GetComponent<TransformComponent>();
             renderableEntity.spriteComponent = entity.GetComponent<SpriteComponent>();

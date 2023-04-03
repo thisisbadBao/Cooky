@@ -79,18 +79,42 @@ Def = {
                     follow = true
                 }
             }
+        },
+        {
+            group = "back",
+            components = {
+                transform = {
+                    position = { x = 250, y = 450 },
+                    scale = { x = 1.0, y = 1.0 },
+                    rotation = 0.0,
+                },
+                rigidbody = {
+                    velocity = { x = 0.0, y = 0.0 }
+                },
+                sprite = {
+                    texture_asset_id = "truck-texture",
+                    width = 32,
+                    height = 32,
+                    z_index = 2,
+                    fixed = false,
+                    src_rect = { x = 0, y = 0 }
+                },
+            }
         }
     } -- end of entities
 }
 
-
 local i = 1
 function update()
-    transform.position.x = transform.position.x + 1
+    -- transform.position.x = transform.position.x + 1
     transform.rotation = transform.rotation + 2
     if i % 10 == 0 then
         text:getText().text = text:getText().text .. "1"
         text:getText().color = Vec3.new(77 + i, 208 + i, 225 + i)
+    end
+    if i == 75 then
+        print("set sprite off")
+        entity:setSprite(false)
     end
     i = i + 1
 end

@@ -58,15 +58,15 @@ public:
             transform.position.x += rigidbody.velocity.x * deltaTime;
             transform.position.y += rigidbody.velocity.y * deltaTime;
 
-            bool isEntityOutsideMap = (
-                transform.position.x < 0 ||
-                transform.position.x > Game::mapWidth ||
-                transform.position.y < 0 ||
-                transform.position.y > Game::mapHeight
-            );
-            if (isEntityOutsideMap && !entity.HasTag("player")) {
-                entity.Kill();
-            }
+            // bool isEntityOutsideMap = (
+            //     transform.position.x < 0 ||
+            //     transform.position.x > Game::mapWidth ||
+            //     transform.position.y < 0 ||
+            //     transform.position.y > Game::mapHeight
+            // );
+            // if (isEntityOutsideMap && !entity.HasTag("player")) {
+            //     entity.Kill();
+            // }
         }
     }
 };

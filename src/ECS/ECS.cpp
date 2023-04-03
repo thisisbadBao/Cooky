@@ -26,7 +26,6 @@ bool Entity::BelongsToGroup(const std::string &group) const {
     return registry->EntityBelongsToGroup(*this, group);
 }
 
-
 void System::AddEntityToSystem(Entity entity) {
     entities.push_back(entity);
 }
@@ -79,8 +78,7 @@ void Registry::AddEntityToSystem(Entity entity) {
     for (auto& system : systems) {
         const auto& systemComponentSignature = system.second->GetComponentSignature();
         bool isInterested = (entityComponentSignature & systemComponentSignature) == systemComponentSignature;
-        if (isInterested)
-        {
+        if (isInterested) {
             system.second->AddEntityToSystem(entity);
         }
     }
