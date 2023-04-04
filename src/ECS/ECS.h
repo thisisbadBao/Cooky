@@ -116,8 +116,6 @@ public:
         size = 0;
     }
 
-    void Add(T object) { data.push_back(object); }
-
     void Set(int entityId, T object) {
         if (entityToIndex.find(entityId) != entityToIndex.end()) {
             int index = entityToIndex[entityId];
@@ -138,7 +136,6 @@ public:
         int indexToRemove = entityToIndex[entityId];
         int lastIndex = size - 1;
         data[indexToRemove] = data[lastIndex];
-        // TODO: remove data[lastIndex]
 
         // Update the entity-index map
         int lastEntityId = indexToEntity[lastIndex];
@@ -155,8 +152,12 @@ public:
         }
     }
 
+    bool Has(int entityId) {
+        return entityToIndex.find(entityId) != entityToIndex.end();
+    }
+
     T& Get(int entityId) {
-        int index = entityToIndex[entityId];
+        int index = entityToIndex[entityId]; // If entityId was removed by RemoveEntityFromPool, index will be 0.
         return static_cast<T &>(data[index]);
     }
 
@@ -310,13 +311,12 @@ void Registry::SetComponentOn(Entity entity, bool on) {
     // If component has already been set on(or off)
     if ((on && entityComponentSignatures[entityId].test(componentId)) ||
         (!on && !entityComponentSignatures[entityId].test(componentId))) {
-        Logger::Err("component has already been set on or off " + std::to_string(on));
+        Logger::Err("Component has already been set on or off." + std::to_string(on));
         return;
     }
 
-    // To turn on(or off) the component for the entity
-    entityComponentSignatures[entityId].set(componentId, on);
-
+    // Turn on the component to find realated systems
+    entityComponentSignatures[entityId].set(componentId, true);
     for (auto &system : systems) {
         const auto& systemComponentSignature = system.second->GetComponentSignature();
         bool isInterested = (entityComponentSignatures[entityId] & systemComponentSignature) == systemComponentSignature;
@@ -327,13 +327,17 @@ void Registry::SetComponentOn(Entity entity, bool on) {
             system.second->AddEntityToSystem(entity);
         }
     }
+
+    // Turn on(or off) the component for the entity
+    entityComponentSignatures[entityId].set(componentId, on);
+
 }
 
 template <typename TComponent>
 void Registry::RemoveComponent(Entity entity) {
     const auto componentId = Component<TComponent>::GetId();
     const auto entityId = entity.GetId();
-
+    SetComponentOn<TComponent>(entity, false);
     std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
     componentPool->Remove(entityId);
     entityComponentSignatures[entityId].set(componentId, false);
@@ -345,7 +349,8 @@ template <typename TComponent>
 bool Registry::HasComponent(Entity entity) const {
     const auto componentId = Component<TComponent>::GetId();
     const auto entityId = entity.GetId();
-    return entityComponentSignatures[entityId].test(componentId);
+    auto componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
+    return componentPool->Has(entityId);
 }
 
 template <typename TComponent>

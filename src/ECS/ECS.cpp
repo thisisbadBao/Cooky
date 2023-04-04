@@ -79,6 +79,7 @@ void Registry::AddEntityToSystem(Entity entity) {
         const auto& systemComponentSignature = system.second->GetComponentSignature();
         bool isInterested = (entityComponentSignature & systemComponentSignature) == systemComponentSignature;
         if (isInterested) {
+            Logger::LogD("Entity: " + std::to_string(entity.GetId()) + " add to " + std::string(system.first.name()));
             system.second->AddEntityToSystem(entity);
         }
     }

@@ -13,6 +13,9 @@ addFont("charriot-font-20", "./assets/fonts/charriot.ttf", 30)
 addTexture("tank", "./assets/images/tank-tiger-right.png")
 
 -- Entity Test
+ent = createEntity()
+ent:addSprite("tank", 32, 32, 2, false, Vec2.new(0, 0))
+
 entity = createEntity()
 
 entity:addSprite("tank", 32, 32, 2, false, Vec2.new(0, 0))
@@ -41,46 +44,6 @@ Def = {
     entities = {
         [0] =
         {
-            tag = "player",
-            components = {
-                transform = {
-                    position = { x = 242, y = 110 },
-                    scale = { x = 1.0, y = 1.0 },
-                    rotation = 0.0, -- degrees
-                },
-                rigidbody = {
-                    velocity = { x = 0.0, y = 0.0 }
-                },
-                sprite = {
-                    texture_asset_id = "chopper-texture",
-                    width = 32,
-                    height = 32,
-                    z_index = 4,
-                    fixed = false,
-                    src_rect = { x = 0, y = 0 }
-                },
-                animation = {
-                    num_frames = 2,
-                    fps = 9,
-                    isLoop = true
-                },
-                boxcollider = {
-                    offset = { x = 0, y = 5 },
-                    width = 32,
-                    height = 25
-                },
-                keyboard_controller = {
-                    up_velocity = { x = 0, y = -180 },
-                    right_velocity = { x = 180, y = 0 },
-                    down_velocity = { x = 0, y = 180 },
-                    left_velocity = { x = -180, y = 0 },
-                },
-                camera_follow = {
-                    follow = true
-                }
-            }
-        },
-        {
             group = "back",
             components = {
                 transform = {
@@ -106,7 +69,7 @@ Def = {
 
 local i = 1
 function update()
-    -- transform.position.x = transform.position.x + 1
+    transform.position.x = transform.position.x + 1
     transform.rotation = transform.rotation + 2
     if i % 10 == 0 then
         text:getText().text = text:getText().text .. "1"
@@ -115,6 +78,13 @@ function update()
     if i == 75 then
         print("set sprite off")
         entity:setSprite(false)
+    end
+    if i == 145 then
+        print("set sprite on")
+        entity:setSprite(true)
+    end
+    if i ==185 then
+        entity:removeSprite()
     end
     i = i + 1
 end
