@@ -29,7 +29,7 @@ transform = entity:getTransform()
 -- print("transform: " .. tostring(transform.position.x))
 
 text = createEntity()
-text:addText(Vec2.new(300, 60), "COOKY V0.0.1", "charriot-font-20", Vec3.new(224, 224, 224), true)
+text:addText(Vec2.new(300, 60), "COOKY V0.0.1", "charriot-font-20", Color.new(224, 224, 224, 150), true)
 
 Def = {
     assets = {
@@ -113,7 +113,7 @@ function update()
     transform.rotation = transform.rotation + 2
     if i % 10 == 0 then
         text:getText().text = text:getText().text .. "1"
-        text:getText().color = Vec3.new(77 + i, 208 + i, 225 + i)
+        text:getText().color = Color.new(77 + i, 208 + i, 225 + i, 150 + i)
     end
     if i == 75 then
         print("set sprite off")

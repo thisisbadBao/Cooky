@@ -1,6 +1,7 @@
 #include "ScriptLoader.h"
 
-#include <fstream>
+#include <dirent.h>
+#include <sys/types.h>
 
 #include "./Game.h"
 #include "../Components/TransformComponent.h"
@@ -21,9 +22,10 @@ ScriptLoader::~ScriptLoader() {
     Logger::LogD("ScriptLoader destructor called!");
 }
 
-void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager) {
+void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& registry,
+    std::unique_ptr<AssetManager>& assetManager, const std::string& scriptPath) {
     // syntax check
-    sol::load_result script = lua.load_file("./assets/scripts/scriptTest.lua");
+    sol::load_result script = lua.load_file(scriptPath);
     if (!script.valid()) {
         sol::error err = script;
         std::string errMsg = err.what();
@@ -31,7 +33,7 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
         return;
     }
 
-    lua.script_file("./assets/scripts/scriptTest.lua");
+    lua.script_file(scriptPath);
 
     sol::optional<sol::function> updateScript = lua["update"];
     if (updateScript != sol::nullopt) {
@@ -194,6 +196,26 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
                 );
             }
 
+            // Text
+            sol::optional<sol::table> text = entity["components"]["text"];
+            if (text != sol::nullopt) {
+                newEntity.AddComponent<TextLabelComponent>(
+                    Vec2(
+                        entity["components"]["text"]["position"]["x"],
+                        entity["components"]["text"]["position"]["y"]
+                    ),
+                    entity["components"]["text"]["content"],
+                    entity["components"]["text"]["assetId"],
+                    Color{
+                        entity["components"]["text"]["color"]["r"],
+                        entity["components"]["text"]["color"]["g"],
+                        entity["components"]["text"]["color"]["b"],
+                        entity["components"]["text"]["color"]["a"]
+                    },
+                    entity["components"]["text"]["isFixed"].get_or(true)
+                );
+            }
+
             // Script
             sol::optional<sol::table> script = entity["components"]["update"];
             if (script != sol::nullopt) {
@@ -203,4 +225,24 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
         }
         i++;
     }
+}
+
+void ScriptLoader::GetScriptPath(std::string scriptPath, std::vector<std::string>& pathVec) {
+    DIR *pDir;
+    struct dirent* ptr;
+    if(!(pDir = opendir(scriptPath.c_str())))
+    {
+        Logger::Err("Script folder doesn't Exist!");
+        return;
+    }
+
+    while((ptr = readdir(pDir))!=0) 
+    {
+        if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0)
+        {
+            pathVec.push_back(scriptPath + "/" + ptr->d_name);
+    	}
+    }
+    sort(pathVec.begin(),pathVec.end());
+    closedir(pDir);
 }

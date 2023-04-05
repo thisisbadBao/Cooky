@@ -36,7 +36,7 @@ void LuaBinding_AddText(Entity entity,
                         Vec2 position = Vec2::Zero,
                         std::string text = "",
                         std::string assetId = "",
-                        Vec3 color = Vec3::Zero,
+                        Color color = Color::White,
                         bool isFixed = true) {
     entity.AddComponent<TextLabelComponent>(position, text, assetId, color, isFixed);
 }
@@ -61,6 +61,17 @@ void New_Usertype_Vec3(sol::state& lua) {
         "z", &Vec3::z,
         sol::meta_function::addition, &Vec3::operator+,
         sol::meta_function::subtraction, &Vec3::operator-
+    );
+}
+
+void New_Usertype_Color(sol::state& lua) {
+    lua.new_usertype<Color>(
+        "Color",
+        sol::constructors<Color(), Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)>(),
+        "r", &Color::r,
+        "g", &Color::g,
+        "b", &Color::b,
+        "a", &Color::a
     );
 }
 
@@ -89,7 +100,7 @@ void New_Usertype_Sprite(sol::state& lua) {
 void New_Usertype_Text(sol::state& lua) {
     lua.new_usertype<TextLabelComponent>(
         "Text",
-        sol::constructors<TextLabelComponent(Vec2 position, std::string text, std::string assetId, Vec3 color, bool isFixed)>(),
+        sol::constructors<TextLabelComponent(Vec2 position, std::string text, std::string assetId, Color color, bool isFixed)>(),
         "position", &TextLabelComponent::position,
         "text", &TextLabelComponent::text,
         "assetId", &TextLabelComponent::assetId,
@@ -154,6 +165,7 @@ public:
         New_Usertype_Entity(lua);
         New_Usertype_Vec2(lua);
         New_Usertype_Vec3(lua);
+        New_Usertype_Color(lua);
         New_Usertype_Transform(lua);
         New_Usertype_Sprite(lua);
         New_Usertype_Text(lua);

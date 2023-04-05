@@ -76,6 +76,7 @@ public:
     void RemoveEntityFromSystem(Entity entity);
     std::vector<Entity> GetSystemEntities() const;
     const Signature& GetComponentSignature() const;
+    void EmptyEntities();
 
     // The component type that entities must have to be considered by the system
     template <typename TComponent> void RequireComponent();
@@ -162,6 +163,13 @@ public:
     }
 
     T& operator[](unsigned int index) { return data[index]; }
+
+    void Reset() {
+        data.clear();
+        size = 0;
+        entityToIndex.clear();
+        indexToEntity.clear();
+    }
 };
 
 // Manage the creation and destruction of entities, add systems, and components
@@ -191,10 +199,14 @@ private:
     std::unordered_map<std::string, std::set<Entity>> entitiesPerGroup;
     std::unordered_map<int, std::string> groupPerEntity;
 
+    // True if Reset() is called
+    bool toBeReset = false;
+
 public:
     Registry() { Logger::LogD("Registry constructor called!"); };
     ~Registry() { Logger::LogD("Registry destructor called!"); };
     void Update();
+    void Reset();
 
     Entity CreateEntity();
     void KillEntity(Entity entity);

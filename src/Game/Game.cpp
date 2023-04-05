@@ -26,6 +26,8 @@ int Game::windowWidth;
 int Game::windowHeight;
 int Game::mapWidth;
 int Game::mapHeight;
+int Game::FPS;
+int Game::MILLISECS_PER_FRAME;
 
 Game::Game() {
     isRunning = false;
@@ -131,7 +133,6 @@ void Game::ProcessInput()
                     Logger::LogT("Window size changed!" + std::to_string(windowHeight) + " " + std::to_string(windowWidth));
                     break;
                 }
-            
             }
     }
 }
@@ -153,10 +154,7 @@ void Game::Setup() {
 
     // Create the Lua binding
     registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager, renderer);
-
-    ScriptLoader scriptLoader;
     lua.open_libraries(sol::lib::base, sol::lib::math);
-    scriptLoader.LoadScript(lua, registry, assetManager);
 }
 
 // Update game object
@@ -195,21 +193,20 @@ void Game::Update() {
 void Game::Render() {
     SDL_SetRenderDrawColor(renderer, 176, 202, 113, 255);
     SDL_RenderClear(renderer);
-    // SDL_RenderSetViewport(renderer, &camera);
+
     // Invoke all the systems that need to render
     registry->GetSystem<RenderSystem>().Update(renderer, assetManager, camera);
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetManager, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
-        registry->GetSystem<RenderGUISystem>().Update(registry, camera, window);
+        registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, lua, assetManager);
     }
     SDL_RenderPresent(renderer); // Swap the buffer
 }
 
 void Game::Run() {
     Setup();
-    while (isRunning)
-    {
+    while (isRunning) {
         ProcessInput();
         Update();
         Render();
@@ -228,4 +225,16 @@ int Game::Get_Refresh_Rate() {
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
     return displayMode.refresh_rate;
+}
+
+void Game::ReloadScript(sol::state& _lua, const std::unique_ptr<Registry>& _registry,
+    std::unique_ptr<AssetManager>& _assetManager, const std::string& scriptPath) {
+    _registry->Reset();
+    ScriptLoader scriptLoader;
+    scriptLoader.LoadScript(_lua, _registry, _assetManager, scriptPath);
+}
+
+void Game::SetFPS(int fps) {
+    FPS = fps;
+    MILLISECS_PER_FRAME = 1000 / fps;
 }

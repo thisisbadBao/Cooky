@@ -10,14 +10,15 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../ECS/ECS.h"
 #include "../Game/Game.h"
+#include "../Game/ScriptLoader.h"
 
 class RenderGUISystem: public System {
 public:
     RenderGUISystem() = default;
 
-    void Update(const std::unique_ptr<Registry>& registry, SDL_Rect camera, SDL_Window* window) {
+    void Update(const std::unique_ptr<Registry>& registry, SDL_Rect camera, SDL_Window* window,
+        sol::state& lua, std::unique_ptr<AssetManager>& assetManager) {
         ImGui::NewFrame();
-        ImGui::ShowDemoWindow();
         if (ImGui::Begin("Debug Window")) {
             ImGui::Text("Set window size");
             int width = Game::windowWidth, height = Game::windowHeight;
@@ -32,6 +33,18 @@ public:
             if (ImGui::Button("Real Full Screen")) {
                 SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
             }
+        }
+        std::vector<std::string> scriptVec;
+        ScriptLoader::GetScriptPath("./assets/scripts", scriptVec);
+        for (auto path : scriptVec) {
+            if (ImGui::Button(path.c_str())) {
+                Game::ReloadScript(lua, registry, assetManager, path);
+            }
+        }
+        static bool showImGuiDemo = false;
+        ImGui::Checkbox("Show ImGui Demo Window", &showImGuiDemo);
+        if (showImGuiDemo) {
+            ImGui::ShowDemoWindow();
         }
         ImGui::End();
 

@@ -44,6 +44,50 @@ const Signature& System::GetComponentSignature() const {
     return componentSignature;
 }
 
+void System::EmptyEntities(){
+    entities.clear();
+}
+
+void Registry::Update() {
+    for (auto entity : entitiesToBeAdded) {
+        AddEntityToSystem(entity);
+    }
+    entitiesToBeAdded.clear();
+
+    for (auto entity : entitiesToBeKilled) {
+        RemoveEntityFromSystem(entity);
+        entityComponentSignatures[entity.GetId()].reset();
+
+        // Remove entity from component pools
+        for (auto pool : componentPools) {
+            if (pool) {
+                pool->RemoveEntityFromPool(entity.GetId());
+            }
+        }
+
+        freeIds.push_back(entity.GetId());
+        RemoveEntityTag(entity);
+        RemoveEntityGroup(entity);
+    }
+    entitiesToBeKilled.clear();
+}
+
+void Registry::Reset() {
+    numEntites = 0;
+    entitiesToBeAdded.clear();
+    entitiesToBeKilled.clear();
+    componentPools.clear();
+    entityComponentSignatures.clear();
+    freeIds.clear();
+    entityPerTag.clear();
+    tagPerEntity.clear();
+    entitiesPerGroup.clear();
+    groupPerEntity.clear();
+    for (auto system : systems) {
+        system.second->EmptyEntities();
+    }
+}
+
 Entity Registry::CreateEntity() {
     int entityId;
     if (freeIds.empty())
@@ -89,30 +133,6 @@ void Registry::RemoveEntityFromSystem(Entity entity) {
     for (auto system : systems) {
         system.second->RemoveEntityFromSystem(entity);
     }
-}
-
-void Registry::Update() {
-    for (auto entity : entitiesToBeAdded) {
-        AddEntityToSystem(entity);
-    }
-    entitiesToBeAdded.clear();
-
-    for (auto entity : entitiesToBeKilled) {
-        RemoveEntityFromSystem(entity);
-        entityComponentSignatures[entity.GetId()].reset();
-
-        // Remove entity from component pools
-        for (auto pool : componentPools) {
-            if (pool) {
-                pool->RemoveEntityFromPool(entity.GetId());
-            }
-        }
-
-        freeIds.push_back(entity.GetId());
-        RemoveEntityTag(entity);
-        RemoveEntityGroup(entity);
-    }
-    entitiesToBeKilled.clear();
 }
 
 void Registry::TagEntity(Entity entity, const std::string &tag) {

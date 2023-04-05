@@ -36,3 +36,19 @@ Vec3 Vec3::operator+(const Vec3& other) const {
 Vec3 Vec3::operator-(const Vec3& other) const {
     return Vec3(x - other.x, y - other.y, z - other.z);
 }
+
+Color::Color() {
+    this->r = 255;
+    this->g = 255;
+    this->b = 255;
+    this->a = 255;
+}
+
+Color::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    this->r = r;
+    this->g = g;
+    this->b = b;
+    this->a = a;
+}
+
+Color Color::White;

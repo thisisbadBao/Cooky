@@ -7,9 +7,6 @@
 #include "../AssetManager/AssetManager.h"
 #include "../EventBus/EventBus.h"
 
-const int FPS = 60;
-const int MILLISECS_PER_FRAME = 1000 / FPS;
-
 class Game {
 private:
     bool isRunning;
@@ -36,9 +33,13 @@ public:
     void Destroy();
 
     static int Get_Refresh_Rate();
+    static void ReloadScript(sol::state& _lua, const std::unique_ptr<Registry>& _registry, std::unique_ptr<AssetManager>& _assetManager, const std::string& scriptPath);
+    static void SetFPS(int fps);
 
     static int windowWidth;
     static int windowHeight;
     static int mapWidth;
     static int mapHeight;
+    static int FPS;
+    static int MILLISECS_PER_FRAME;
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 struct Vec2 {
     float x;
     float y;
@@ -36,5 +38,22 @@ struct Vec3 {
     Vec3 operator-(const Vec3 &other) const;
 
     static const Vec3 Zero;
+};
 
+struct Vec4 {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+struct Color {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
+
+    Color();
+    Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+    static Color White;
 };

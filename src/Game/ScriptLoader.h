@@ -11,5 +11,7 @@ class ScriptLoader {
 public:
     ScriptLoader();
     ~ScriptLoader();
-    void LoadScript(sol::state& lua, const std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager);
+
+    void LoadScript(sol::state& lua, const std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager, const std::string& scriptPath);
+    static void GetScriptPath(std::string scriptPath, std::vector<std::string>& pathVec);
 };

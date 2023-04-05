@@ -9,11 +9,11 @@ struct TextLabelComponent {
     Vec2 position;
     std::string text;
     std::string assetId;
-    Vec3 color;
+    Color color;
     bool isFixed;
 
     TextLabelComponent(Vec2 position = Vec2::Zero, std::string text = "",
-    std::string assetId = "", Vec3 color = Vec3::Zero, bool isFixed = true) {
+    std::string assetId = "", Color color = Color::White, bool isFixed = true) {
         this->position = position;
         this->text = text;
         this->assetId = assetId;
