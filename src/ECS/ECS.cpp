@@ -116,6 +116,10 @@ void Registry::Update() {
 }
 
 void Registry::TagEntity(Entity entity, const std::string &tag) {
+    if (entityPerTag.find(tag) != entityPerTag.end()) {
+        Logger::Err("Tag \"" + tag + "\" has been used.");
+        return;
+    }
     entityPerTag.emplace(tag, entity);
     tagPerEntity.emplace(entity.GetId(), tag);
 }

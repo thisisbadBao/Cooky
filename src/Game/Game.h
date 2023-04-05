@@ -35,6 +35,8 @@ public:
     void Run();
     void Destroy();
 
+    static int Get_Refresh_Rate();
+
     static int windowWidth;
     static int windowHeight;
     static int mapWidth;

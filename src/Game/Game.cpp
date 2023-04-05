@@ -51,15 +51,18 @@ void Game::Initialize() {
     }
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
-    windowWidth = displayMode.w / 2;
-    windowHeight = displayMode.h / 2;
+
+    windowWidth = 1200; // displayMode.w / 2;
+    windowHeight = 900; // displayMode.h / 2;
+    const char* windowTitle = "Cooky Engine";
+
     window = SDL_CreateWindow(
-        NULL,
+        windowTitle,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         windowWidth,
         windowHeight,
-        SDL_WINDOW_ALLOW_HIGHDPI
+        SDL_WINDOW_RESIZABLE
     );
     if (!window) {
         Logger::Err("Error creating SDL window.");
@@ -67,7 +70,7 @@ void Game::Initialize() {
     }
 
     renderer = SDL_CreateRenderer(
-        window, 
+        window,
         -1,
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
     );
@@ -87,7 +90,6 @@ void Game::Initialize() {
     camera.w = windowWidth;
     camera.h = windowHeight;
 
-    // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     isRunning = true;
 }
 
@@ -119,6 +121,17 @@ void Game::ProcessInput()
                 }
                 eventBus->EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
                 break;
+            case SDL_WINDOWEVENT:
+                switch (sdlEvent.window.event) {
+                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+                    camera.w = windowWidth;
+                    camera.h = windowHeight;
+                    ImGuiSDL::Initialize(renderer, windowWidth, windowHeight);
+                    Logger::LogT("Window size changed!" + std::to_string(windowHeight) + " " + std::to_string(windowWidth));
+                    break;
+                }
+            
             }
     }
 }
@@ -188,7 +201,7 @@ void Game::Render() {
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetManager, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
-        registry->GetSystem<RenderGUISystem>().Update(registry, camera);
+        registry->GetSystem<RenderGUISystem>().Update(registry, camera, window);
     }
     SDL_RenderPresent(renderer); // Swap the buffer
 }
@@ -209,4 +222,10 @@ void Game::Destroy() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+int Game::Get_Refresh_Rate() {
+    SDL_DisplayMode displayMode;
+    SDL_GetCurrentDisplayMode(0, &displayMode);
+    return displayMode.refresh_rate;
 }

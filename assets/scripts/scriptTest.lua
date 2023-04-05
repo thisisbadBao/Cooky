@@ -44,6 +44,46 @@ Def = {
     entities = {
         [0] =
         {
+            tag = "player",
+            components = {
+                transform = {
+                    position = { x = 242, y = 110 },
+                    scale = { x = 1.0, y = 1.0 },
+                    rotation = 0.0, -- degrees
+                },
+                rigidbody = {
+                    velocity = { x = 0.0, y = 0.0 }
+                },
+                sprite = {
+                    texture_asset_id = "chopper-texture",
+                    width = 32,
+                    height = 32,
+                    z_index = 4,
+                    fixed = false,
+                    src_rect = { x = 0, y = 0 }
+                },
+                animation = {
+                    num_frames = 2,
+                    fps = 9,
+                    isLoop = true
+                },
+                boxcollider = {
+                    offset = { x = 0, y = 5 },
+                    width = 32,
+                    height = 25
+                },
+                keyboard_controller = {
+                    up_velocity = { x = 0, y = -180 },
+                    right_velocity = { x = 180, y = 0 },
+                    down_velocity = { x = 0, y = 180 },
+                    left_velocity = { x = -180, y = 0 },
+                },
+                camera_follow = {
+                    follow = true
+                }
+            }
+        },
+        {
             group = "back",
             components = {
                 transform = {

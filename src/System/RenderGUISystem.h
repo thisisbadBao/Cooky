@@ -9,25 +9,28 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../ECS/ECS.h"
+#include "../Game/Game.h"
 
 class RenderGUISystem: public System {
 public:
     RenderGUISystem() = default;
 
-    void Update(const std::unique_ptr<Registry>& registry, SDL_Rect camera) {
+    void Update(const std::unique_ptr<Registry>& registry, SDL_Rect camera, SDL_Window* window) {
         ImGui::NewFrame();
+        ImGui::ShowDemoWindow();
         if (ImGui::Begin("Debug Window")) {
-            ImGui::Text("ImGui Test");
-            static int posX = 0, posY = 42;
-            ImGui::SliderInt("posX", &posX, 0, 1500);
-            ImGui::SliderInt("posY", &posY, 0, 1500);
-            if (ImGui::Button("Create new enenmy")) {
-                Entity tank = registry->CreateEntity();
-                tank.Group("enemy");
-                tank.AddComponent<TransformComponent>(Vec2(posX, posY), Vec2(2.0, 2.0), 0.0);
-                tank.AddComponent<RigidBodyComponent>(Vec2(100.0, 0.0));
-                tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 2);
-                tank.AddComponent<BoxColliderComponent>(32, 32);
+            ImGui::Text("Set window size");
+            int width = Game::windowWidth, height = Game::windowHeight;
+            ImGui::Text("Window width: %d", width);
+            ImGui::Text("Window height: %d", height);
+            if (ImGui::Button("Set Full Screen")) {
+                SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+            }
+            if (ImGui::Button("Quit Full Screen")) {
+                SDL_SetWindowFullscreen(window, 0);
+            }
+            if (ImGui::Button("Real Full Screen")) {
+                SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
             }
         }
         ImGui::End();
@@ -38,9 +41,10 @@ public:
         ImGui::SetNextWindowBgAlpha(0.9f);
         if (ImGui::Begin("Map coordinates", NULL, windowFlags)) {
             ImGui::Text(
-                "Map coordinates (x=%.1f, y=%.1f)",
+                "Mouse pos (x=%.1f, y=%.1f) FPS: %d",
                 ImGui::GetIO().MousePos.x + camera.x,
-                ImGui::GetIO().MousePos.y + camera.y
+                ImGui::GetIO().MousePos.y + camera.y,
+                Game::Get_Refresh_Rate()
             );
         }
         ImGui::End();
