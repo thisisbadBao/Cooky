@@ -153,7 +153,7 @@ void Game::Setup() {
     registry->AddSystem<ScriptSystem>();
 
     // Create the Lua binding
-    registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager, renderer);
+    registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager);
     lua.open_libraries(sol::lib::base, sol::lib::math);
 }
 
@@ -166,7 +166,7 @@ void Game::Update() {
     }
 
     // The difference in ticks since the last frame, converted to seconds
-    double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
+    deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
 
     // Store the current frame time
     millisecsPreviousFrame = SDL_GetTicks(); // millisecond
@@ -191,7 +191,7 @@ void Game::Update() {
 }
 
 void Game::Render() {
-    SDL_SetRenderDrawColor(renderer, 176, 202, 113, 255);
+    SDL_SetRenderDrawColor(renderer, 174, 208, 238, 255);
     SDL_RenderClear(renderer);
 
     // Invoke all the systems that need to render
@@ -199,9 +199,11 @@ void Game::Render() {
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetManager, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
-        registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, lua, assetManager);
+        registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, lua, assetManager, deltaTime);
     }
     SDL_RenderPresent(renderer); // Swap the buffer
+
+    registry->GetSystem<ScriptSystem>().UpdateScript(lua, registry, assetManager);
 }
 
 void Game::Run() {
@@ -221,15 +223,10 @@ void Game::Destroy() {
     SDL_Quit();
 }
 
-int Game::Get_Refresh_Rate() {
-    SDL_DisplayMode displayMode;
-    SDL_GetCurrentDisplayMode(0, &displayMode);
-    return displayMode.refresh_rate;
-}
-
-void Game::ReloadScript(sol::state& _lua, const std::unique_ptr<Registry>& _registry,
+void Game::ReloadScript(sol::state& _lua, std::unique_ptr<Registry>& _registry,
     std::unique_ptr<AssetManager>& _assetManager, const std::string& scriptPath) {
     _registry->Reset();
+    _registry->GetSystem<ScriptSystem>().ResetLuaState(_lua, _registry, _assetManager);
     ScriptLoader scriptLoader;
     scriptLoader.LoadScript(_lua, _registry, _assetManager, scriptPath);
 }

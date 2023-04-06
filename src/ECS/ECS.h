@@ -87,6 +87,8 @@ public:
     virtual ~IPool() = default;
 
     virtual void RemoveEntityFromPool(int entityId) = 0;
+
+    virtual void Clear() = 0;
 };
 
 // A vector of objects of type T
@@ -112,7 +114,7 @@ public:
 
     void Resize(int n) { data.resize(n); }
 
-    void Clear() {
+    void Clear() override {
         data.clear();
         size = 0;
     }
@@ -198,9 +200,6 @@ private:
     std::unordered_map<int, std::string> tagPerEntity;
     std::unordered_map<std::string, std::set<Entity>> entitiesPerGroup;
     std::unordered_map<int, std::string> groupPerEntity;
-
-    // True if Reset() is called
-    bool toBeReset = false;
 
 public:
     Registry() { Logger::LogD("Registry constructor called!"); };

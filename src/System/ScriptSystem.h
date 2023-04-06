@@ -160,8 +160,7 @@ public:
         RequireComponent<ScriptComponent>();
     }
 
-    void CreateLuaBindings(sol::state& lua, std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager,
-        SDL_Renderer* renderer) {
+    void CreateLuaBindings(sol::state& lua,std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager) {
         New_Usertype_Entity(lua);
         New_Usertype_Vec2(lua);
         New_Usertype_Vec3(lua);
@@ -190,4 +189,36 @@ public:
             script.func(); // Invoke the function
         }
     }
+
+    void UpdateScript(sol::state& _lua, std::unique_ptr<Registry>& _registry, std::unique_ptr<AssetManager>& _assetManager) {
+        for (auto script : scriptTobeReload) {
+            Logger::LogT("Reload Script: " + script);
+            Game::ReloadScript(_lua, _registry, _assetManager, script);
+        }
+        scriptTobeReload.clear();
+        if (toBeReset) {
+            _registry->Reset();
+            toBeReset = false;
+            ResetLuaState(_lua, _registry, _assetManager);
+        }
+    }
+
+    void ResetLuaState(sol::state& _lua, std::unique_ptr<Registry>& _registry, std::unique_ptr<AssetManager>& _assetManager) {
+        sol::state newLua;
+        _lua = std::move(newLua);
+        _lua.open_libraries(sol::lib::base, sol::lib::math);
+        _registry->GetSystem<ScriptSystem>().CreateLuaBindings(_lua, _registry, _assetManager);
+    }
+
+    void ResetScript() {
+        toBeReset = true;
+    }
+
+    void AddScriptTobeReload(const std::string& scriptPath) {
+        scriptTobeReload.emplace_back(scriptPath);
+    }
+
+private:
+    std::vector<std::string> scriptTobeReload;
+    bool toBeReset = false;
 };

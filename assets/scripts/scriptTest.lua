@@ -123,7 +123,7 @@ function update()
         print("set sprite on")
         entity:setSprite(true)
     end
-    if i ==185 then
+    if i == 185 then
         entity:removeSprite()
     end
     i = i + 1

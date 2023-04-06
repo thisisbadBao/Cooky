@@ -76,6 +76,11 @@ void Registry::Reset() {
     numEntites = 0;
     entitiesToBeAdded.clear();
     entitiesToBeKilled.clear();
+    for (auto pool : componentPools) {
+        if (pool) {
+            pool->Clear();
+        }
+    }
     componentPools.clear();
     entityComponentSignatures.clear();
     freeIds.clear();

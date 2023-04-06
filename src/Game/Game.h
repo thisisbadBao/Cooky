@@ -12,6 +12,7 @@ private:
     bool isRunning;
     bool isDebug;
     int millisecsPreviousFrame = 0;
+    double deltaTime;
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Rect camera;
@@ -32,8 +33,7 @@ public:
     void Run();
     void Destroy();
 
-    static int Get_Refresh_Rate();
-    static void ReloadScript(sol::state& _lua, const std::unique_ptr<Registry>& _registry, std::unique_ptr<AssetManager>& _assetManager, const std::string& scriptPath);
+    static void ReloadScript(sol::state& _lua, std::unique_ptr<Registry>& _registry, std::unique_ptr<AssetManager>& _assetManager, const std::string& scriptPath);
     static void SetFPS(int fps);
 
     static int windowWidth;
