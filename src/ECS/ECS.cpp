@@ -51,6 +51,7 @@ void System::EmptyEntities(){
 void Registry::Update() {
     for (auto entity : entitiesToBeAdded) {
         AddEntityToSystem(entity);
+        entityCount++;
     }
     entitiesToBeAdded.clear();
 
@@ -68,12 +69,14 @@ void Registry::Update() {
         freeIds.push_back(entity.GetId());
         RemoveEntityTag(entity);
         RemoveEntityGroup(entity);
+        entityCount--;
     }
     entitiesToBeKilled.clear();
 }
 
 void Registry::Reset() {
-    numEntites = 0;
+    entityIdCount = 0;
+    entityCount = 0;
     entitiesToBeAdded.clear();
     entitiesToBeKilled.clear();
     for (auto pool : componentPools) {
@@ -95,9 +98,8 @@ void Registry::Reset() {
 
 Entity Registry::CreateEntity() {
     int entityId;
-    if (freeIds.empty())
-    {
-        entityId = numEntites++;
+    if (freeIds.empty()) {
+        entityId = entityIdCount++;
         if (entityId >= entityComponentSignatures.size()) {
             entityComponentSignatures.resize(entityId + 1);
         }
@@ -110,7 +112,7 @@ Entity Registry::CreateEntity() {
     entity.registry = this;
     entitiesToBeAdded.insert(entity);
 
-    Logger::LogT("Entity created with id = " + std::to_string(entityId));
+    // Logger::Log("Entity created with id = " + std::to_string(entityId));
 
     return entity;
 }
@@ -202,4 +204,8 @@ void Registry::RemoveEntityGroup(Entity entity) {
         }
         groupPerEntity.erase(groupedEntity);
     }
+}
+
+int Registry::GetEntityCount() {
+    return entityCount;
 }

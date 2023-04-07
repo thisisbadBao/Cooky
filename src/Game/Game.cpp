@@ -199,7 +199,7 @@ void Game::Render() {
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetManager, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
-        registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, lua, assetManager, deltaTime);
+        registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, deltaTime);
     }
     SDL_RenderPresent(renderer); // Swap the buffer
 

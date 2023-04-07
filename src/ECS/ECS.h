@@ -177,7 +177,9 @@ public:
 // Manage the creation and destruction of entities, add systems, and components
 class Registry {
 private:
-    int numEntites = 0;
+    int entityIdCount = 0; // The current maximum entityId
+    int entityCount = 0; // The current number of entities
+
     std::set<Entity> entitiesToBeAdded; // Entities will be created in the next Update() in Registry
     std::set<Entity> entitiesToBeKilled; // Entities will be killed in the next Update() in Registry
 
@@ -238,6 +240,9 @@ public:
     bool EntityBelongsToGroup(Entity entity, const std::string &group) const;
     std::vector<Entity> GetEntitiesByGroup(const std::string &group) const;
     void RemoveEntityGroup(Entity entity);
+
+    // Log info
+    int GetEntityCount();
 };
 
 // System functions

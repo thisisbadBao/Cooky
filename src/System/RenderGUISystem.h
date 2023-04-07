@@ -17,8 +17,7 @@ class RenderGUISystem: public System {
 public:
     RenderGUISystem() = default;
 
-    void Update(std::unique_ptr<Registry>& registry, SDL_Rect camera, SDL_Window* window,
-        sol::state& lua, std::unique_ptr<AssetManager>& assetManager, double dt) {
+    void Update(std::unique_ptr<Registry>& registry, SDL_Rect camera, SDL_Window* window, double dt) {
         ImGui::NewFrame();
         if (ImGui::Begin("Debug Window")) {
             ImGui::Text("Set window size");
@@ -99,8 +98,7 @@ public:
             ImGui::PlotLines("FPS", fps_values, fps_interval, fps_offset, overlay.c_str(), 55.0f, 65.0f, ImVec2(0, 80.0f));
 
             // Entity Info
-            static int entityCount = 0;
-            ImGui::Text("Entity Count: %d", entityCount);
+            ImGui::Text("Entity Count: %d", registry->GetEntityCount());
         }
 
         ImGui::End();

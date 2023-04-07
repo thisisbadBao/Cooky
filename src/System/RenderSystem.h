@@ -54,8 +54,8 @@ public:
                 static_cast<int>(transform.position.x - (sprite.isFixed ? 0 : camera.x)),
                 static_cast<int>(transform.position.y - (sprite.isFixed ? 0 : camera.y)),
                 static_cast<int>(sprite.width * transform.scale.x),
-                static_cast<int>(sprite.height * transform.scale.y)};
-
+                static_cast<int>(sprite.height * transform.scale.y)
+            };
             SDL_RenderCopyEx(
                 renderer,
                 assetManager->GetTexture(sprite.assetId),

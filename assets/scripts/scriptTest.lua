@@ -9,17 +9,18 @@ vec3 = vec1 + vec2
 
 
 -- Asset Test
-addFont("charriot-font-20", "./assets/fonts/charriot.ttf", 30)
+addFont("charriot-20", "./assets/fonts/charriot.ttf", 30)
 addTexture("tank", "./assets/images/tank-tiger-right.png")
 
 -- Entity Test
-ent = createEntity()
+ent = newEnt()
 ent:addSprite("tank", 32, 32, 2, false, Vec2.new(0, 0))
 
-entity = createEntity()
+entity = newEnt()
 
 entity:addSprite("tank", 32, 32, 2, false, Vec2.new(0, 0))
 entity:addTransform(Vec2.new(200, 200), Vec2.new(1, 1), 0)
+entity:tag("cooky")
 
 local has = entity:hasTransform()
 -- print("has: " .. tostring(has))
@@ -28,8 +29,8 @@ transform = entity:getTransform()
 
 -- print("transform: " .. tostring(transform.position.x))
 
-text = createEntity()
-text:addText(Vec2.new(300, 60), "COOKY V0.0.1", "charriot-font-20", Color.new(224, 224, 224, 150), true)
+text = newEnt()
+text:addText(Vec2.new(300, 60), "COOKY V0.0.1", "charriot-20", Color.new(224, 224, 224, 150), true)
 
 Def = {
     assets = {
@@ -111,8 +112,9 @@ local i = 1
 function update()
     transform.position.x = transform.position.x + 1
     transform.rotation = transform.rotation + 2
-    if i % 10 == 0 then
-        text:getText().text = text:getText().text .. "1"
+    if i % 20 == 0 then
+        newText = newEnt()
+        newText:addText(Vec2.new(100, 100 + i), tostring(i//20), "charriot-20", Color.new(236, 176, 193, 255), true)
         text:getText().color = Color.new(77 + i, 208 + i, 225 + i, 150 + i)
     end
     if i == 75 then
@@ -122,6 +124,9 @@ function update()
     if i == 145 then
         print("set sprite on")
         entity:setSprite(true)
+        temp = getEntByTag("cooky")
+        print("Get by tag: " .. tostring(temp:getId()))
+        print("Has tag: " .. tostring(temp:hasTag("cooky")))
     end
     if i == 185 then
         entity:removeSprite()
@@ -130,4 +135,3 @@ function update()
 end
 
 -- print("id: " .. entity:getId())
-

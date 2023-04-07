@@ -129,22 +129,22 @@ void New_Usertype_Entity(sol::state& lua) {
         "groupOf", &Entity::BelongsToGroup,
         "addTransform", LuaBinding_AddTransform,
         "setTransform", &Entity::SetComponentOn<TransformComponent>,
-        "removeTransform", &Entity::RemoveComponent<TransformComponent>,
+        "rmTransform", &Entity::RemoveComponent<TransformComponent>,
         "hasTransform", &Entity::HasComponent<TransformComponent>,
         "getTransform", &Entity::GetComponent<TransformComponent>,
         "addSprite", LuaBinding_AddSprite,
         "setSprite", &Entity::SetComponentOn<SpriteComponent>,
-        "removeSprite", &Entity::RemoveComponent<SpriteComponent>,
+        "rmSprite", &Entity::RemoveComponent<SpriteComponent>,
         "hasSprite", &Entity::HasComponent<SpriteComponent>,
         "getSprite", &Entity::GetComponent<SpriteComponent>,
         "addText", LuaBinding_AddText,
         "setText", &Entity::SetComponentOn<TextLabelComponent>,
-        "removeText", &Entity::RemoveComponent<TextLabelComponent>,
+        "rmText", &Entity::RemoveComponent<TextLabelComponent>,
         "hasText", &Entity::HasComponent<TextLabelComponent>,
         "getText", &Entity::GetComponent<TextLabelComponent>,
         "addRigidBody", LuaBinding_AddRigidBody,
         "setRigidBody", &Entity::SetComponentOn<RigidBodyComponent>,
-        "removeRigidBody", &Entity::RemoveComponent<RigidBodyComponent>,
+        "rmRigidBody", &Entity::RemoveComponent<RigidBodyComponent>,
         "hasRigidBody", &Entity::HasComponent<RigidBodyComponent>,
         "getRigidBody", &Entity::GetComponent<RigidBodyComponent>
     );
@@ -172,13 +172,16 @@ public:
 
         lua.set_function("test", Test);
 
-        lua.set_function("createEntity", [&]() -> Entity { return registry->CreateEntity();});
+        lua.set_function("newEnt", [&registry]() -> Entity { return registry->CreateEntity();});
 
-        lua.set_function("addTexture", [&](std::string id, std::string file) {
-            assetManager->AddTexture(id, file); 
+        lua.set_function("getEntByTag", [&registry](const std::string &tag) -> Entity {
+            return registry->GetEntityByTag(tag); });
+
+        lua.set_function("addTexture", [&assetManager](std::string id, std::string file) {
+            assetManager->AddTexture(id, file);
         });
 
-        lua.set_function("addFont", [&](std::string id, std::string file, int fontSize) {
+        lua.set_function("addFont", [&assetManager](std::string id, std::string file, int fontSize) {
             assetManager->AddFont(id, file, fontSize);
         });
     }
