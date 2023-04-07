@@ -21,6 +21,7 @@ public:
     }
 
     void OnKeyPressed(KeyPressedEvent& event) {
+        if (Game::isPaused) return;
         std::string keyCode = std::to_string(event.symbol);
         std::string keySymbol(1, event.symbol);
         Logger::LogD("Key pressed event emitted: [" + keyCode + "] " + keySymbol);

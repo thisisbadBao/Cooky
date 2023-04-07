@@ -45,23 +45,34 @@ public:
                 ImGui::GetIO().MousePos.x + camera.x,
                 ImGui::GetIO().MousePos.y + camera.y
             );
-        }
-        std::vector<std::string> scriptVec;
-        ScriptLoader::GetScriptPath("./assets/scripts", scriptVec);
-        for (auto path : scriptVec) {
-            if (ImGui::Button(path.c_str())) {
-                registry->GetSystem<ScriptSystem>().AddScriptTobeReload(path);
+
+            std::vector<std::string> scriptVec;
+            ScriptLoader::GetScriptPath("./assets/scripts", scriptVec);
+            for (auto path : scriptVec) {
+                if (ImGui::Button(path.c_str())) {
+                    registry->GetSystem<ScriptSystem>().AddScriptTobeReload(path);
+                }
             }
-        }
 
-        if (ImGui::Button("Reset")) {
-            registry->GetSystem<ScriptSystem>().ResetScript();
-        }
+            if (ImGui::Button("Reset")) {
+                registry->GetSystem<ScriptSystem>().ResetScript();
+            }
 
-        static bool showImGuiDemo = false;
-        ImGui::Checkbox("Show ImGui Demo Window", &showImGuiDemo);
-        if (showImGuiDemo) {
-            ImGui::ShowDemoWindow();
+            if (Game::isPaused) {
+                if (ImGui::Button("Continue")) {
+                    Game::isPaused = false;
+                }
+            } else {
+                if (ImGui::Button("Pause")) {
+                    Game::isPaused = true;
+                }
+            }
+
+            static bool showImGuiDemo = false;
+            ImGui::Checkbox("Show ImGui Demo Window", &showImGuiDemo);
+            if (showImGuiDemo) {
+                ImGui::ShowDemoWindow();
+            }
         }
         ImGui::End();
 

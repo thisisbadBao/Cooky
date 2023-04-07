@@ -28,10 +28,12 @@ int Game::mapWidth;
 int Game::mapHeight;
 int Game::FPS;
 int Game::MILLISECS_PER_FRAME;
+bool Game::isPaused;
 
 Game::Game() {
     isRunning = false;
     isDebug = true;
+    isPaused = false;
     registry = std::make_unique<Registry>();
     assetManager = std::make_unique<AssetManager>();
     eventBus = std::make_unique<EventBus>();
@@ -173,6 +175,8 @@ void Game::Update() {
 
     // Reset all event handlers
     eventBus->Reset();
+
+    if (isPaused) return;
 
     // Subcribe event
     registry->GetSystem<MovementSystem>().SubscribeToEvent(eventBus);

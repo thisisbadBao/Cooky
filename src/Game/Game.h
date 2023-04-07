@@ -42,4 +42,5 @@ public:
     static int mapHeight;
     static int FPS;
     static int MILLISECS_PER_FRAME;
+    static bool isPaused;
 };

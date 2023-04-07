@@ -129,7 +129,7 @@ function update()
         print("Has tag: " .. tostring(temp:hasTag("cooky")))
     end
     if i == 185 then
-        entity:removeSprite()
+        entity:rmSprite()
     end
     i = i + 1
 end
