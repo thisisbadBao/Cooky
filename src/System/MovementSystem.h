@@ -38,12 +38,12 @@ public:
             auto &rigidbody = enemy.GetComponent<RigidBodyComponent>();
             auto &sprite = enemy.GetComponent<SpriteComponent>();
 
-            if (rigidbody.velocity.x != 0) {
-                rigidbody.velocity.x *= -1;
+            if (rigidbody.vel.x != 0) {
+                rigidbody.vel.x *= -1;
                 sprite.flip = (sprite.flip == FLIP_NONE ? FLIP_HORIZONTAL : FLIP_NONE);
             }
-            if (rigidbody.velocity.y != 0) {
-                rigidbody.velocity.y *= -1;
+            if (rigidbody.vel.y != 0) {
+                rigidbody.vel.y *= -1;
                 sprite.flip = (sprite.flip == FLIP_NONE) ? FLIP_VERTICAL : FLIP_NONE;
             }
         }
@@ -51,12 +51,12 @@ public:
 
     void Update(double deltaTime) {
         for (auto entity : GetSystemEntities()) {
-            // Update entity position based on velocity
+            // Update entity position based on vel
             TransformComponent& transform = entity.GetComponent<TransformComponent>();
             const RigidBodyComponent& rigidbody = entity.GetComponent<RigidBodyComponent>();
 
-            transform.position.x += rigidbody.velocity.x * deltaTime;
-            transform.position.y += rigidbody.velocity.y * deltaTime;
+            transform.position.x += rigidbody.vel.x * deltaTime;
+            transform.position.y += rigidbody.vel.y * deltaTime;
 
             // bool isEntityOutsideMap = (
             //     transform.position.x < 0 ||

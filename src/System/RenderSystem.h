@@ -21,8 +21,7 @@ public:
     void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetManager, SDL_Rect camera) {
         // Sort all the entities by z-index
         std::vector<RenderableEntity> renderableEntities;
-        for (auto entity : GetSystemEntities())
-        {
+        for (auto entity : GetSystemEntities()) {
             // Logger::Log("entity" + std::to_string(entity.GetId()));
             RenderableEntity renderableEntity;
             renderableEntity.transformComponent = entity.GetComponent<TransformComponent>();

@@ -32,6 +32,7 @@ public:
     void Render();
     void Run();
     void Destroy();
+    void TestPhysicsSystem();
 
     static void ReloadScript(sol::state& _lua, std::unique_ptr<Registry>& _registry, std::unique_ptr<AssetManager>& _assetManager, const std::string& scriptPath);
     static void SetFPS(int fps);

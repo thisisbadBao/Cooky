@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <box2d/box2d.h>
 
 #include "../ECS/ECS.h"
 #include "../Game/Game.h"
@@ -28,8 +29,8 @@ void LuaBinding_AddSprite(Entity entity,
     entity.AddComponent<SpriteComponent>(assetId, width, height, zIndex, isFixed, srcRect);
 }
 
-void LuaBinding_AddRigidBody(Entity entity, Vec2 velocity = Vec2::Zero) {
-    entity.AddComponent<RigidBodyComponent>(velocity);
+void LuaBinding_AddRigidBody(Entity entity, Vec2 vel = Vec2(0.0, 0.0)) {
+    entity.AddComponent<RigidBodyComponent>(vel);
 }
 
 void LuaBinding_AddText(Entity entity,
@@ -43,7 +44,7 @@ void LuaBinding_AddText(Entity entity,
 
 void New_Usertype_Vec2(sol::state& lua) {
     lua.new_usertype<Vec2>(
-        "Vec2",
+        "Vec2", sol::call_constructor,
         sol::constructors<Vec2(), Vec2(float x, float y)>(),
         "x", &Vec2::x,
         "y", &Vec2::y,
@@ -54,7 +55,7 @@ void New_Usertype_Vec2(sol::state& lua) {
 
 void New_Usertype_Vec3(sol::state& lua) {
     lua.new_usertype<Vec3>(
-        "Vec3",
+        "Vec3", sol::call_constructor,
         sol::constructors<Vec3(), Vec3(float x, float y, float z)>(),
         "x", &Vec3::x,
         "y", &Vec3::y,
@@ -66,7 +67,7 @@ void New_Usertype_Vec3(sol::state& lua) {
 
 void New_Usertype_Color(sol::state& lua) {
     lua.new_usertype<Color>(
-        "Color",
+        "Color", sol::call_constructor,
         sol::constructors<Color(), Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)>(),
         "r", &Color::r,
         "g", &Color::g,
@@ -77,7 +78,7 @@ void New_Usertype_Color(sol::state& lua) {
 
 void New_Usertype_Transform(sol::state& lua) {
     lua.new_usertype<TransformComponent>(
-        "Transform",
+        "Transform", sol::call_constructor,
         sol::constructors<TransformComponent(Vec2 position, Vec2 scale, double rotation)>(),
         "position", &TransformComponent::position,
         "scale", &TransformComponent::scale,
@@ -99,7 +100,7 @@ void New_Usertype_Sprite(sol::state& lua) {
 
 void New_Usertype_Text(sol::state& lua) {
     lua.new_usertype<TextLabelComponent>(
-        "Text",
+        "Text", sol::call_constructor,
         sol::constructors<TextLabelComponent(Vec2 position, std::string text, std::string assetId, Color color, bool isFixed)>(),
         "position", &TextLabelComponent::position,
         "text", &TextLabelComponent::text,
@@ -111,15 +112,48 @@ void New_Usertype_Text(sol::state& lua) {
 
 void New_Usertype_RigidBody(sol::state& lua) {
     lua.new_usertype<RigidBodyComponent>(
-        "RigidBody",
-        sol::constructors<RigidBodyComponent(Vec2 velocity)>(),
-        "velocity", &RigidBodyComponent::velocity
+        "RigidBody", sol::call_constructor,
+        sol::constructors<RigidBodyComponent(Vec2 vel)>(),
+        "vel", &RigidBodyComponent::vel
     );
 }
 
+// void New_Usertype_BodyDef(sol::state& lua) {
+//     lua.new_usertype<b2BodyDef>(
+//         "BodyDef", sol::call_constructor,
+//         sol::constructors<b2BodyDef()>(),
+//         "position", &b2BodyDef::position,
+//         "angle", &b2BodyDef::angle,
+//         "linearVelocity", &b2BodyDef::linearVelocity,
+//         "angularVelocity", &b2BodyDef::angularVelocity,
+//         "linearDamping", &b2BodyDef::linearDamping,
+//         "angularDamping", &b2BodyDef::angularDamping,
+//         "allowSleep", &b2BodyDef::allowSleep,
+//         "awake", &b2BodyDef::awake,
+//         "fixedRotation", &b2BodyDef::fixedRotation,
+//         "bullet", &b2BodyDef::bullet,
+//         "type", &b2BodyDef::type,
+//         "enabled", &b2BodyDef::enabled,
+//         "gravityScale", &b2BodyDef::gravityScale
+//     );
+// }
+
+// void New_Usertype_FixtureDef(sol::state& lua) {
+//     lua.new_usertype<b2FixtureDef>(
+//         "FixtureDef", sol::call_constructor,
+//         sol::constructors<b2BodyDef()>(),
+//         "shape", &b2FixtureDef::shape,
+//         "friction", &b2FixtureDef::friction,
+//         "restitution", &b2FixtureDef::restitution,
+//         "restitutionThreshold", &b2FixtureDef::restitutionThreshold,
+//         "density", &b2FixtureDef::density,
+//         "isSensor", &b2FixtureDef::isSensor
+//     );
+// }
+
 void New_Usertype_Entity(sol::state& lua) {
     lua.new_usertype<Entity>(
-        "entity",
+        "entity", sol::call_constructor,
         sol::constructors<Entity(int id), Entity(const Entity &entity)>(),
         "getId", &Entity::GetId,
         "kill", &Entity::Kill,

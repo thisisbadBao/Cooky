@@ -7,6 +7,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_sdl.h>
 #include <imgui/imgui_impl_sdl.h>
+#include <box2d/box2d.h>
 
 #include "../Logger/Logger.h"
 #include "../System/MovementSystem.h"
@@ -20,6 +21,7 @@
 #include "../System/RenderTextSystem.h"
 #include "../System/RenderGUISystem.h"
 #include "../System/ScriptSystem.h"
+#include "../System/PhysicsSystem.h"
 #include "../Game/ScriptLoader.h"
 
 int Game::windowWidth;
@@ -128,15 +130,34 @@ void Game::ProcessInput()
             case SDL_WINDOWEVENT:
                 switch (sdlEvent.window.event) {
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
-                    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-                    camera.w = windowWidth;
-                    camera.h = windowHeight;
-                    ImGuiSDL::Initialize(renderer, windowWidth, windowHeight);
-                    Logger::LogT("Window size changed!" + std::to_string(windowHeight) + " " + std::to_string(windowWidth));
-                    break;
+                        SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+                        camera.w = windowWidth;
+                        camera.h = windowHeight;
+                        ImGuiSDL::Initialize(renderer, windowWidth, windowHeight);
+                        Logger::LogT("Window size changed!" + std::to_string(windowHeight) + " " + std::to_string(windowWidth));
+                        break;
                 }
+                break;
             }
-    }
+        }
+}
+
+
+void Game::TestPhysicsSystem() {
+    Entity ett = registry->CreateEntity();
+
+    ett.AddComponent<RigidBodyComponent>(Vec2(0, -5));
+
+    b2BodyDef& body = ett.GetComponent<RigidBodyComponent>().bodyDef;
+    body.type = b2_dynamicBody;
+    body.position.Set(5, 2);
+
+    b2FixtureDef& fixture = ett.GetComponent<RigidBodyComponent>().fixtureDef;
+    fixture.density = 1;
+    fixture.friction = 0.3f;
+    fixture.restitution = 0.5f;
+    ett.AddComponent<TransformComponent>(Vec2(400, 400));
+    ett.AddComponent<BoxColliderComponent>(80, 80);
 }
 
 // Initialize game objects...
@@ -153,10 +174,13 @@ void Game::Setup() {
     registry->AddSystem<RenderTextSystem>();
     registry->AddSystem<RenderGUISystem>();
     registry->AddSystem<ScriptSystem>();
+    registry->AddSystem<PhysicsSystem>();
 
     // Create the Lua binding
     registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager);
     lua.open_libraries(sol::lib::base, sol::lib::math);
+
+    TestPhysicsSystem();
 }
 
 // Update game object
@@ -205,6 +229,7 @@ void Game::Render() {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
         registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, deltaTime);
     }
+    registry->GetSystem<PhysicsSystem>().Update(renderer);
     SDL_RenderPresent(renderer); // Swap the buffer
 
     registry->GetSystem<ScriptSystem>().UpdateScript(lua, registry, assetManager);

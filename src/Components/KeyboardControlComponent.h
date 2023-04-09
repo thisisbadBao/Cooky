@@ -3,15 +3,15 @@
 #include "../Utils/CookyUtils.h"
 
 struct KeyboardControlComponent {
-    Vec2 upVelocity;
-    Vec2 rightVelocity;
-    Vec2 downVelocity;
-    Vec2 leftVelocity;
-    KeyboardControlComponent(Vec2 upVelocity = Vec2::Zero, Vec2 rightVelocity = Vec2::Zero, 
-        Vec2 downVelocity = Vec2::Zero, Vec2 leftVelocity = Vec2::Zero) {
-        this->upVelocity = upVelocity;
-        this->rightVelocity = rightVelocity;
-        this->downVelocity = downVelocity;
-        this->leftVelocity = leftVelocity;
+    Vec2 upvel;
+    Vec2 rightvel;
+    Vec2 downvel;
+    Vec2 leftvel;
+    KeyboardControlComponent(Vec2 upvel = Vec2::Zero, Vec2 rightvel = Vec2::Zero, 
+        Vec2 downvel = Vec2::Zero, Vec2 leftvel = Vec2::Zero) {
+        this->upvel = upvel;
+        this->rightvel = rightvel;
+        this->downvel = downvel;
+        this->leftvel = leftvel;
     }
 };

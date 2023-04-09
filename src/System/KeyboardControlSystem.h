@@ -33,19 +33,19 @@ public:
             switch (event.symbol)
             {
             case SDLK_UP:
-                rigidbody.velocity = keyboardControl.upVelocity;
+                rigidbody.vel = keyboardControl.upvel;
                 sprite.srcRect.y = sprite.height * 0;
                 break;
             case SDLK_RIGHT:
-                rigidbody.velocity = keyboardControl.rightVelocity;
+                rigidbody.vel = keyboardControl.rightvel;
                 sprite.srcRect.y = sprite.height * 1;
                 break;
             case SDLK_DOWN:
-                rigidbody.velocity = keyboardControl.downVelocity;
+                rigidbody.vel = keyboardControl.downvel;
                 sprite.srcRect.y = sprite.height * 2;
                 break;
             case SDLK_LEFT:
-                rigidbody.velocity = keyboardControl.leftVelocity;
+                rigidbody.vel = keyboardControl.leftvel;
                 sprite.srcRect.y = sprite.height * 3;
                 break;
             default:

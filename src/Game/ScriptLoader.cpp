@@ -121,15 +121,15 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
             }
 
             // RigidBody
-            sol::optional<sol::table> rigidbody = entity["components"]["rigidbody"];
-            if (rigidbody != sol::nullopt) {
-                newEntity.AddComponent<RigidBodyComponent>(
-                    Vec2(
-                        entity["components"]["rigidbody"]["velocity"]["x"].get_or(0.0),
-                        entity["components"]["rigidbody"]["velocity"]["y"].get_or(0.0)
-                    )
-                );
-            }
+            // sol::optional<sol::table> rigidbody = entity["components"]["rigidbody"];
+            // if (rigidbody != sol::nullopt) {
+            //     newEntity.AddComponent<RigidBodyComponent>(
+            //         Vec2(
+            //             entity["components"]["rigidbody"]["vel"]["x"].get_or(0.0),
+            //             entity["components"]["rigidbody"]["vel"]["y"].get_or(0.0)
+            //         )
+            //     );
+            // }
 
             // Sprite
             sol::optional<sol::table> sprite = entity["components"]["sprite"];
@@ -178,20 +178,20 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
             if (keyboardControlled != sol::nullopt) {
                 newEntity.AddComponent<KeyboardControlComponent>(
                     Vec2(
-                        entity["components"]["keyboard_controller"]["up_velocity"]["x"],
-                        entity["components"]["keyboard_controller"]["up_velocity"]["y"]
+                        entity["components"]["keyboard_controller"]["up_vel"]["x"],
+                        entity["components"]["keyboard_controller"]["up_vel"]["y"]
                     ),
                     Vec2(
-                        entity["components"]["keyboard_controller"]["right_velocity"]["x"],
-                        entity["components"]["keyboard_controller"]["right_velocity"]["y"]
+                        entity["components"]["keyboard_controller"]["right_vel"]["x"],
+                        entity["components"]["keyboard_controller"]["right_vel"]["y"]
                     ),
                     Vec2(
-                        entity["components"]["keyboard_controller"]["down_velocity"]["x"],
-                        entity["components"]["keyboard_controller"]["down_velocity"]["y"]
+                        entity["components"]["keyboard_controller"]["down_vel"]["x"],
+                        entity["components"]["keyboard_controller"]["down_vel"]["y"]
                     ),
                     Vec2(
-                        entity["components"]["keyboard_controller"]["left_velocity"]["x"],
-                        entity["components"]["keyboard_controller"]["left_velocity"]["y"]
+                        entity["components"]["keyboard_controller"]["left_vel"]["x"],
+                        entity["components"]["keyboard_controller"]["left_vel"]["y"]
                     )
                 );
             }
