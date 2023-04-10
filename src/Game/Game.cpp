@@ -144,23 +144,41 @@ void Game::ProcessInput()
 
 
 void Game::TestPhysicsSystem() {
-    Entity ett = registry->CreateEntity();
+    // Entity ett = registry->CreateEntity();
+    // ett.AddComponent<RigidBodyComponent>();
+    // b2BodyDef body;
+    // body.type = b2_dynamicBody;
+    // // body.angle = 45 / RAD2DEG;
+    // body.position.Set(5, 2);
+    // registry->GetSystem<PhysicsSystem>().AddPolygon(ett, body, 1, 1, 0.3f, 0.5f, 1);
+    // ett.AddComponent<TransformComponent>();
 
-    ett.AddComponent<RigidBodyComponent>(Vec2(0, -5));
+    Entity plat = registry->CreateEntity();
+    plat.AddComponent<RigidBodyComponent>();
+    b2BodyDef platbody;
+    platbody.type = b2_staticBody;
+    platbody.position.Set(5, 9);
+    registry->GetSystem<PhysicsSystem>().AddPolygon(plat, platbody, 8, 0.5, 0.3f, 0.5f, 1);
+    plat.AddComponent<TransformComponent>();
 
-    b2BodyDef& body = ett.GetComponent<RigidBodyComponent>().bodyDef;
-    body.type = b2_dynamicBody;
-    body.position.Set(5, 2);
+    Entity poly = registry->CreateEntity();
+    poly.AddComponent<RigidBodyComponent>();
+    b2BodyDef polygon;
+    polygon.type = b2_dynamicBody;
+    b2Vec2 points[4] = {{2, 1}, {1, 2}, {1, 4}, {3, 4}};
+    registry->GetSystem<PhysicsSystem>().AddPolygon(poly, polygon, points, 4, 0.3f, 1, 1);
+    poly.AddComponent<TransformComponent>();
 
-    b2FixtureDef& fixture = ett.GetComponent<RigidBodyComponent>().fixtureDef;
-    fixture.density = 1;
-    fixture.friction = 0.3f;
-    fixture.restitution = 0.5f;
-    ett.AddComponent<TransformComponent>(Vec2(400, 400));
-    ett.AddComponent<BoxColliderComponent>(80, 80);
+    Entity poly2 = registry->CreateEntity();
+    poly2.AddComponent<RigidBodyComponent>();
+    b2BodyDef polygon2;
+    polygon2.type = b2_dynamicBody;
+    b2Vec2 points2[4] = {{4, 0}, {5, 0}, {5, 1}, {4, 1}};
+    registry->GetSystem<PhysicsSystem>().AddPolygon(poly2, polygon2, points2, 4, 0.3f, 1, 1);
+    poly2.AddComponent<TransformComponent>(Vec2(0, 0));
 }
 
-// Initialize game objects...
+// Initialize game objects...s
 void Game::Setup() {
     // Add systems
     registry->AddSystem<MovementSystem>();
@@ -212,6 +230,7 @@ void Game::Update() {
     registry->GetSystem<AnimationSystem>().Update();
     registry->GetSystem<CollisionSystem>().Update(eventBus);
     registry->GetSystem<CameraMovementSystem>().Update(camera);
+    registry->GetSystem<PhysicsSystem>().Update();
     registry->GetSystem<ScriptSystem>().Update();
 
     // Update registry
@@ -229,7 +248,6 @@ void Game::Render() {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
         registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, deltaTime);
     }
-    registry->GetSystem<PhysicsSystem>().Update(renderer);
     SDL_RenderPresent(renderer); // Swap the buffer
 
     registry->GetSystem<ScriptSystem>().UpdateScript(lua, registry, assetManager);

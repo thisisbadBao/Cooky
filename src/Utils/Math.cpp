@@ -51,4 +51,12 @@ Color::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
     this->a = a;
 }
 
+Color& Color::operator=(const Color& color) {
+    this->r = color.r;
+    this->g = color.g;
+    this->b = color.b;
+    this->a = color.a;
+    return *this;
+}
+
 Color Color::White;
