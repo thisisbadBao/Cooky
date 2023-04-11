@@ -144,38 +144,33 @@ void Game::ProcessInput()
 
 
 void Game::TestPhysicsSystem() {
-    // Entity ett = registry->CreateEntity();
-    // ett.AddComponent<RigidBodyComponent>();
-    // b2BodyDef body;
-    // body.type = b2_dynamicBody;
-    // // body.angle = 45 / RAD2DEG;
-    // body.position.Set(5, 2);
-    // registry->GetSystem<PhysicsSystem>().AddPolygon(ett, body, 1, 1, 0.3f, 0.5f, 1);
-    // ett.AddComponent<TransformComponent>();
+        for (int i = 0; i < 6; i++) {
+            Entity ett = registry->CreateEntity();
+            ett.AddComponent<RigidBodyComponent>();
+            b2BodyDef body;
+            body.type = b2_dynamicBody;
+            body.position.Set(3, i);
+            registry->GetSystem<PhysicsSystem>().AddPolygon(ett, body, 0.6, 0.6, 0.3f, 0.5f, 1);
+            ett.AddComponent<TransformComponent>();
+        }
 
-    Entity plat = registry->CreateEntity();
-    plat.AddComponent<RigidBodyComponent>();
-    b2BodyDef platbody;
-    platbody.type = b2_staticBody;
-    platbody.position.Set(5, 9);
-    registry->GetSystem<PhysicsSystem>().AddPolygon(plat, platbody, 8, 0.5, 0.3f, 0.5f, 1);
-    plat.AddComponent<TransformComponent>();
+        Entity plat = registry->CreateEntity();
+        plat.AddComponent<RigidBodyComponent>();
+        b2BodyDef platbody;
+        platbody.type = b2_staticBody;
+        platbody.position.Set(5, 9);
+        registry->GetSystem<PhysicsSystem>().AddPolygon(plat, platbody, 8, 0.5, 0.3f, 0.5f, 1);
+        plat.AddComponent<TransformComponent>();
 
-    Entity poly = registry->CreateEntity();
-    poly.AddComponent<RigidBodyComponent>();
-    b2BodyDef polygon;
-    polygon.type = b2_dynamicBody;
-    b2Vec2 points[4] = {{2, 1}, {1, 2}, {1, 4}, {3, 4}};
-    registry->GetSystem<PhysicsSystem>().AddPolygon(poly, polygon, points, 4, 0.3f, 1, 1);
-    poly.AddComponent<TransformComponent>();
-
-    Entity poly2 = registry->CreateEntity();
-    poly2.AddComponent<RigidBodyComponent>();
-    b2BodyDef polygon2;
-    polygon2.type = b2_dynamicBody;
-    b2Vec2 points2[4] = {{4, 0}, {5, 0}, {5, 1}, {4, 1}};
-    registry->GetSystem<PhysicsSystem>().AddPolygon(poly2, polygon2, points2, 4, 0.3f, 1, 1);
-    poly2.AddComponent<TransformComponent>(Vec2(0, 0));
+        Entity poly = registry->CreateEntity();
+        poly.AddComponent<RigidBodyComponent>();
+        b2BodyDef polygon;
+        polygon.position.Set(8, 6);
+        polygon.type = b2_dynamicBody;
+        polygon.linearVelocity.Set(-1, 0);
+        b2Vec2 points[3] = {{2, 1}, {1, 2}, {3, 4}};
+        registry->GetSystem<PhysicsSystem>().AddPolygon(poly, polygon, points, 3, 0.3f, 1, 1);
+        poly.AddComponent<TransformComponent>();
 }
 
 // Initialize game objects...s

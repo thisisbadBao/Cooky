@@ -30,13 +30,25 @@ public:
                 Logger::Log("continue");
                 continue;
             }
-            auto& transform = entity.GetComponent<TransformComponent>();
-            auto& polygon = entity.GetComponent<PolygonColliderComponent>();  // 改成collider
+            auto collider = entity.GetComponent<ColliderComponent>();
+            auto &transform = entity.GetComponent<TransformComponent>();
             b2Vec2 pos = entityToBody[entity.GetId()]->GetPosition();
+            b2Vec2 curCenter = entityToBody[entity.GetId()]->GetWorldCenter();
+
             transform.position = Vec2(pos.x, pos.y);
-            b2Vec2 center = entityToBody[entity.GetId()]->GetWorldCenter();
-            polygon.dcenter = Vec2(center.x, center.y) - polygon.center;
-            // Logger::Log("box center: x:" + std::to_string(center.x) + ", y:" + std::to_string(center.y));
+            float dRotation = entityToBody[entity.GetId()]->GetAngle() - transform.rotation;
+            transform.rotation += dRotation;
+
+            if (collider.shape == CShape::POLYGON) {
+                auto& polygon = entity.GetComponent<PolygonColliderComponent>();
+                Vec2 dcenter = {curCenter.x - polygon.center.x, curCenter.y - polygon.center.y};
+                polygon.center = Vec2(curCenter.x, curCenter.y);
+                for (int i = 0; i < polygon.points.size(); i++) {
+                    polygon.points[i] += dcenter;
+                    polygon.points[i].Rotate(polygon.center, dRotation);
+                }
+            }
+
         }
 
         world->Step(1.0f / 60.0f, 6.0f, 2.0f); // update
@@ -59,10 +71,12 @@ public:
         entity.AddComponent<ColliderComponent>(CShape::POLYGON);
         std::vector<Vec2> vertices(4);
         for (int i = 0; i < 4; i++) {
-            vertices[i] = Vec2(boxShape.m_vertices[i].x, boxShape.m_vertices[i].y);
+            vertices[i] = Vec2(boxShape.m_vertices[i].x + bodyDef.position.x,
+                boxShape.m_vertices[i].y + bodyDef.position.y);
         }
-        entity.AddComponent<PolygonColliderComponent>(vertices, 4);
 
+        Vec2 center = Vec2(body->GetWorldCenter().x, body->GetWorldCenter().y);
+        entity.AddComponent<PolygonColliderComponent>(vertices, 4, center);
         entity.GetComponent<RigidBodyComponent>().isInit = true;
     }
 
@@ -74,8 +88,12 @@ public:
 
         b2PolygonShape polygon;
         polygon.Set(points, count);
-        fixtureDef.shape = &polygon;
+        for (int i = 0; i < count; i++) {
+            points[i] -= polygon.m_centroid;
+        }
+        polygon.Set(points, count); // Set polygon's center to Zero
 
+        fixtureDef.shape = &polygon;
         b2Body* body;
         body = world->CreateBody(&bodyDef);
         body->CreateFixture(&fixtureDef);
@@ -84,13 +102,15 @@ public:
         entity.AddComponent<ColliderComponent>(CShape::POLYGON);
         std::vector<Vec2> vertices(count);
         for (int i = 0; i < count; i++) {
-            vertices[i] = Vec2(polygon.m_vertices[i].x, polygon.m_vertices[i].y);
+            vertices[i] = Vec2(polygon.m_vertices[i].x + bodyDef.position.x,
+                polygon.m_vertices[i].y + bodyDef.position.y);
         }
+
         Vec2 center = Vec2(body->GetWorldCenter().x, body->GetWorldCenter().y);
-        Logger::Log("box center: x:" + std::to_string(center.x) + ", y:" + std::to_string(center.y));
-
+        b2Vec2 pos = entityToBody[entity.GetId()]->GetPosition();
+        Logger::Log("poly center: x:" + std::to_string(center.x) + ", y:" + std::to_string(center.y));
+        Logger::Log("poly pos: x:" + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
         entity.AddComponent<PolygonColliderComponent>(vertices, count, center);
-
         entity.GetComponent<RigidBodyComponent>().isInit = true;
     }
 

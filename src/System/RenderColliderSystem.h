@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <box2d/box2d.h>
+#include <math.h>
 
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
@@ -19,8 +20,6 @@ public:
     void Update(SDL_Renderer* renderer, SDL_Rect& camera) {
         for (auto entity : GetSystemEntities()) {
             // auto transform = entity.GetComponent<TransformComponent>();
-
-            // Logger::Err("dx: " + std::to_string(transform.dx) + ", dy: " + std::to_string(transform.dy));
             const auto collider = entity.GetComponent<ColliderComponent>();
             Color drawColor = {255, 0, 0, 255};
 
@@ -31,10 +30,10 @@ public:
                     for (int j = i + 1; j < poly.count; j++) {
                         SDL_RenderDrawLine(
                             renderer,
-                            (poly.points[i].x + poly.dcenter.x) * MET2PIX,
-                            (poly.points[i].y + poly.dcenter.y) * MET2PIX,
-                            (poly.points[j].x + poly.dcenter.x) * MET2PIX,
-                            (poly.points[j].y + poly.dcenter.y) * MET2PIX
+                            poly.points[i].x * MET2PIX,
+                            poly.points[i].y * MET2PIX,
+                            poly.points[j].x * MET2PIX,
+                            poly.points[j].y * MET2PIX
                         );
                     }
                 }

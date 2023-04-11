@@ -1,4 +1,5 @@
 #include "Math.h"
+#include <math.h>
 
 const Vec2 Vec2::Zero(0, 0);
 
@@ -16,8 +17,40 @@ Vec2 Vec2::operator-(const Vec2& other) const {
     return Vec2(x - other.x, y - other.y);
 }
 
+Vec2& Vec2::operator-=(const Vec2& other) {
+    x -= other.x;
+    y -= other.y;
+    return *this;
+}
+
+Vec2& Vec2::operator+=(const Vec2& other) {
+    x += other.x;
+    y += other.y;
+    return *this;
+}
+
 float Vec2::dot(const Vec2& other) const {
     return x * other.x + y * other.y;
+}
+
+float Vec2::distance(const Vec2 &other) const {
+    float dx = x - other.x;
+    float dy = y - other.y;
+    return sqrt(dx * dx + dy * dy);
+}
+
+void Vec2::Set(float _x, float _y) {
+    this->x = _x;
+    this->y = _y;
+}
+
+void Vec2::Rotate(Vec2 center, float angle) {
+    float s = sin(angle);
+    float c = cos(angle);
+    float xtemp = x - center.x;
+    float ytemp = y - center.y;
+    x = xtemp * c - ytemp * s + center.x;
+    y = xtemp * s + ytemp * c + center.y;
 }
 
 const Vec3 Vec3::Zero(0, 0, 0);

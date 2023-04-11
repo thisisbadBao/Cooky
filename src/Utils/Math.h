@@ -10,13 +10,23 @@ struct Vec2 {
 
     Vec2(float x, float y) : x(x), y(y) {}
 
-    Vec2 &operator=(const Vec2 &other);
+    Vec2 &operator=(const Vec2& other);
 
-    Vec2 operator+(const Vec2 &other) const;
+    Vec2 operator+(const Vec2& other) const;
 
-    Vec2 operator-(const Vec2 &other) const;
+    Vec2 operator-(const Vec2& other) const;
 
-    float dot(const Vec2 &other) const;
+    Vec2& operator-=(const Vec2& other);
+
+    Vec2& operator+=(const Vec2& other);
+
+    float dot(const Vec2& other) const;
+
+    float distance(const Vec2& other) const;
+
+    void Set(float x, float y);
+
+    void Rotate(Vec2 center, float angle);
 
     static const Vec2 Zero;
 
@@ -31,11 +41,11 @@ struct Vec3 {
 
     Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
-    Vec3 &operator=(const Vec3 &other);
+    Vec3 &operator=(const Vec3& other);
 
-    Vec3 operator+(const Vec3 &other) const;
+    Vec3 operator+(const Vec3& other) const;
 
-    Vec3 operator-(const Vec3 &other) const;
+    Vec3 operator-(const Vec3& other) const;
 
     static const Vec3 Zero;
 };
