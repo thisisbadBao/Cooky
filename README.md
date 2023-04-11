@@ -2,16 +2,16 @@ A cross-platform 2D game engine (as my graduation project).
 
 ## Features To Do
 
-- [ ] Assets Managment
-- [ ] Render System
+- [x] Assets Managment
+- [x] Render System
 - [ ] Animation System
 - [ ] Collision System
-- [ ] Event System
+- [x] Event System
 - [ ] Audio Manager
 - [ ] Particle System
-- [ ] ECS(Entity Component System)
-- [ ] Box2D
-- [ ] Lua Scripting
-- [ ] Dear IMGui
-- [ ] True-Type Fonts
+- [x] ECS(Entity Component System)
+- [x] Box2D
+- [x] Lua Scripting
+- [x] Dear IMGui
+- [x] True-Type Fonts
 - [ ] Tilemap Editor
