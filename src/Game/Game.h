@@ -6,6 +6,7 @@
 #include "../ECS/ECS.h"
 #include "../AssetManager/AssetManager.h"
 #include "../EventBus/EventBus.h"
+#include "../Utils/CookyUtils.h"
 
 class Game {
 private:
@@ -21,6 +22,7 @@ private:
     std::unique_ptr<Registry> registry;
     std::unique_ptr<AssetManager> assetManager;
     std::unique_ptr<EventBus> eventBus;
+    std::unique_ptr<DebugDraw> debugDraw;
 
 public:
     Game();

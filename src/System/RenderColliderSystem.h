@@ -5,9 +5,11 @@
 #include <math.h>
 
 #include "../ECS/ECS.h"
+#include "../Utils/CookyUtils.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/PolygonColliderComponent.h"
+#include "../Components/CircleColliderComponnet.h"
 #include "../Components/ColliderComponent.h"
 
 class RenderColliderSystem: public System {
@@ -17,7 +19,7 @@ public:
         RequireComponent<ColliderComponent>();
     }
 
-    void Update(SDL_Renderer* renderer, SDL_Rect& camera) {
+    void Update(std::unique_ptr<DebugDraw>& debugDraw, SDL_Rect& camera) {
         for (auto entity : GetSystemEntities()) {
             // auto transform = entity.GetComponent<TransformComponent>();
             const auto collider = entity.GetComponent<ColliderComponent>();
@@ -25,18 +27,12 @@ public:
 
             if (collider.shape == CShape::POLYGON) {
                 const PolygonColliderComponent poly = entity.GetComponent<PolygonColliderComponent>();
-                for (int i = 0; i < poly.count - 1; i++) {
-                    SDL_SetRenderDrawColor(renderer, drawColor.r, drawColor.g, drawColor.b, drawColor.a);
-                    for (int j = i + 1; j < poly.count; j++) {
-                        SDL_RenderDrawLine(
-                            renderer,
-                            poly.points[i].x * MET2PIX,
-                            poly.points[i].y * MET2PIX,
-                            poly.points[j].x * MET2PIX,
-                            poly.points[j].y * MET2PIX
-                        );
-                    }
-                }
+                debugDraw->DrawPolygon(poly.vertices, poly.vertexCount, drawColor);
+            }
+
+            if (collider.shape == CShape::CIRCLE) {
+                const CircleColliderComponnet circle = entity.GetComponent<CircleColliderComponnet>();
+                debugDraw->DrawCircle(circle.center, circle.radius, drawColor);
             }
         }
     }

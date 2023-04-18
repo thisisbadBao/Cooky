@@ -9,6 +9,7 @@
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/PolygonColliderComponent.h"
+#include "../Components/CircleColliderComponnet.h"
 #include "../Components/ColliderComponent.h"
 #include "../Components/TransformComponent.h"
 
@@ -25,7 +26,9 @@ public:
     }
 
     void Update() {
-        for (auto entity : GetSystemEntities()) {
+        world->DebugDraw();
+        for (auto entity : GetSystemEntities())
+        {
             auto rb = entity.GetComponent<RigidBodyComponent>();
             if (!rb.isInit) {
                 Logger::Log("continue");
@@ -43,11 +46,15 @@ public:
             if (collider.shape == CShape::POLYGON) {
                 auto& polygon = entity.GetComponent<PolygonColliderComponent>();
                 Vec2 dcenter = {curCenter.x - polygon.center.x, curCenter.y - polygon.center.y};
-                polygon.center = Vec2(curCenter.x, curCenter.y);
-                for (int i = 0; i < polygon.points.size(); i++) {
-                    polygon.points[i] += dcenter;
-                    polygon.points[i].Rotate(polygon.center, dRotation);
+                polygon.center.Set(curCenter.x, curCenter.y);
+                for (int i = 0; i < polygon.vertices.size(); i++) {
+                    polygon.vertices[i] += dcenter;
+                    polygon.vertices[i].Rotate(polygon.center, dRotation);
                 }
+            }
+            if (collider.shape == CShape::CIRCLE) {
+                auto& circle = entity.GetComponent<CircleColliderComponnet>();
+                circle.center.Set(pos.x, pos.y);
             }
         }
         world->Step(1.0f / 60.0f, 6.0f, 2.0f); // update
@@ -117,6 +124,27 @@ public:
         // Logger::Log("poly center: x:" + std::to_string(center.x) + ", y:" + std::to_string(center.y));
         // Logger::Log("poly pos: x:" + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
         entity.AddComponent<PolygonColliderComponent>(vertices, count, center);
+        entity.GetComponent<RigidBodyComponent>().isInit = true;
+    }
+
+    void AddCircle(Entity entity, b2BodyDef bodyDef, float radius, float friction, float restitution, float density) {
+        b2FixtureDef fixtureDef;
+        fixtureDef.friction = friction;
+        fixtureDef.restitution = restitution;
+        fixtureDef.density = density;
+
+        b2CircleShape circle;
+        circle.m_radius = radius;
+        Vec2 center = {bodyDef.position.x, bodyDef.position.y};
+
+        fixtureDef.shape = &circle;
+        b2Body* body;
+        body = world->CreateBody(&bodyDef);
+        body->CreateFixture(&fixtureDef);
+        entityToBody.emplace(entity.GetId(), body);
+
+        entity.AddComponent<ColliderComponent>(CShape::CIRCLE);
+        entity.AddComponent<CircleColliderComponnet>(center, radius);
         entity.GetComponent<RigidBodyComponent>().isInit = true;
     }
 

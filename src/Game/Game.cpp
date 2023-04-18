@@ -3,7 +3,6 @@
 #include <iostream>
 #include <memory>
 #include <SDL2/SDL_image.h>
-#include "../Utils/CookyUtils.h"
 #include <imgui/imgui.h>
 #include <imgui/imgui_sdl.h>
 #include <imgui/imgui_impl_sdl.h>
@@ -38,6 +37,7 @@ Game::Game() {
     registry = std::make_unique<Registry>();
     assetManager = std::make_unique<AssetManager>();
     eventBus = std::make_unique<EventBus>();
+    debugDraw = std::make_unique<DebugDraw>();
     Logger::LogD("Game constructor called!");
 }
 
@@ -84,6 +84,7 @@ void Game::Initialize() {
         return;
     }
     assetManager->SetRenderer(renderer);
+    debugDraw->SetRenderer(renderer);
 
     // Init ImGui context
     ImGui::CreateContext();
@@ -170,6 +171,14 @@ void Game::TestPhysicsSystem() {
         b2Vec2 points[3] = {{2, 1}, {1, 2}, {3, 4}};
         registry->GetSystem<PhysicsSystem>().AddPolygon(poly, polygon, points, 3, 0.3f, 1, 1);
         poly.AddComponent<TransformComponent>();
+
+        Entity circle = registry->CreateEntity();
+        circle.AddComponent<RigidBodyComponent>();
+        b2BodyDef circlebody;
+        circlebody.type = b2_dynamicBody;
+        circlebody.position.Set(5, 3);
+        registry->GetSystem<PhysicsSystem>().AddCircle(circle, circlebody, 1.5f, 0.3f, 0.5f, 1);
+        circle.AddComponent<TransformComponent>();
 }
 
 // Initialize game objects...s
@@ -239,7 +248,7 @@ void Game::Render() {
     registry->GetSystem<RenderSystem>().Update(renderer, assetManager, camera);
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetManager, camera);
     if (isDebug) {
-        registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
+        registry->GetSystem<RenderColliderSystem>().Update(debugDraw, camera);
         registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, deltaTime);
     }
     SDL_RenderPresent(renderer); // Swap the buffer

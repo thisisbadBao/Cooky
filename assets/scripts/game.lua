@@ -35,5 +35,14 @@ platform:addTransform(Vec2(0,0), Vec2(0,0), 0)
 platform:addRigidBody(Vec2(0, 0))
 platformdef = BodyDef()
 platformdef.type = BodyType.static
-platformdef.position = b2Vec2(5, 7)
-platform:addPolygon(platformdef, 10, 0.6, 0.3, 0.5, 1)
+platformdef.position = b2Vec2(7, 7)
+platform:addPolygon(platformdef, 12, 0.2, 0.3, 0.5, 1)
+
+circle = newEnt()
+circle:addTransform(Vec2(0,0), Vec2(0,0), 0)
+circle:addRigidBody(Vec2(0, 0))
+circledef = BodyDef()
+circledef.type = BodyType.dynamic
+circledef.linearVelocity = b2Vec2(-4, 3)
+circledef.position = b2Vec2(8, -3)
+circle:addCircle(circledef, 0.5, 0.3, 0.5, 1)

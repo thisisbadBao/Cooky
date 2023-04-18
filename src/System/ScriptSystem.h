@@ -68,6 +68,15 @@ void LuaBinding_AddPolygon2(Entity entity,
     entity.registry->GetSystem<PhysicsSystem>().AddPolygon(entity, bodyDef, points, count, friction, restitution, density);
 }
 
+void LuaBinding_AddCircle(Entity entity,
+                          b2BodyDef bodyDef,
+                          float radius,
+                          float friction,
+                          float restitution,
+                          float density) {
+    entity.registry->GetSystem<PhysicsSystem>().AddCircle(entity, bodyDef, radius, friction, restitution, density);
+}
+
 void New_Usertype_Vec2(sol::state& lua) {
     lua.new_usertype<Vec2>(
         "Vec2", sol::call_constructor,
@@ -211,7 +220,8 @@ void New_Usertype_Entity(sol::state& lua) {
         "rmRigidBody", &Entity::RemoveComponent<RigidBodyComponent>,
         "hasRigidBody", &Entity::HasComponent<RigidBodyComponent>,
         "getRigidBody", &Entity::GetComponent<RigidBodyComponent>,
-        "addPolygon", sol::overload(LuaBinding_AddPolygon1, LuaBinding_AddPolygon2)
+        "addPolygon", sol::overload(LuaBinding_AddPolygon1, LuaBinding_AddPolygon2),
+        "addCircle", LuaBinding_AddCircle
     );
 }
 
