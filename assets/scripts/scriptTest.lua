@@ -26,87 +26,81 @@ local has = entity:hasTransform()
 -- print("has: " .. tostring(has))
 
 transform = entity:getTransform()
-
 -- print("transform: " .. tostring(transform.position.x))
 
 text = newEnt()
 text:addText(Vec2(300, 60), "COOKY V0.0.1", "charriot-20", Color(224, 224, 224, 150), true)
 
--- Def = {
---     assets = {
---         [0] =
---         { type = "texture", id = "chopper-texture", file = "./assets/images/chopper-spritesheet.png" },
---         { type = "texture", id = "truck-texture", file = "./assets/images/truck-ford-right.png" },
---         { type = "texture", id = "rader-texture", file = "./assets/images/radar.png" },
---         { type = "font", id = "pico-font-5", file = "./assets/fonts/pico8.ttf", font_size = 5 },
---         { type = "font", id = "pico-font-10", file = "./assets/fonts/pico8.ttf", font_size = 10 },
---     },
+Def = {
+    assets = {
+        [0] =
+        { type = "texture", id = "chopper-texture", file = "./assets/images/chopper-spritesheet.png" },
+        { type = "texture", id = "truck-texture", file = "./assets/images/truck-ford-right.png" },
+        { type = "texture", id = "rader-texture", file = "./assets/images/radar.png" },
+        { type = "font", id = "pico-font-5", file = "./assets/fonts/pico8.ttf", font_size = 5 },
+        { type = "font", id = "pico-font-10", file = "./assets/fonts/pico8.ttf", font_size = 10 },
+    },
 
---     entities = {
---         [0] =
---         {
---             tag = "player",
---             components = {
---                 transform = {
---                     position = { x = 242, y = 110 },
---                     scale = { x = 1.0, y = 1.0 },
---                     rotation = 0.0, -- degrees
---                 },
---                 rigidbody = {
---                     velocity = { x = 0.0, y = 0.0 }
---                 },
---                 sprite = {
---                     texture_asset_id = "chopper-texture",
---                     width = 32,
---                     height = 32,
---                     z_index = 4,
---                     fixed = false,
---                     src_rect = { x = 0, y = 0 }
---                 },
---                 animation = {
---                     num_frames = 2,
---                     fps = 9,
---                     isLoop = true
---                 },
---                 boxcollider = {
---                     offset = { x = 0, y = 5 },
---                     width = 32,
---                     height = 25
---                 },
---                 keyboard_controller = {
---                     up_velocity = { x = 0, y = -180 },
---                     right_velocity = { x = 180, y = 0 },
---                     down_velocity = { x = 0, y = 180 },
---                     left_velocity = { x = -180, y = 0 },
---                 },
---                 camera_follow = {
---                     follow = true
---                 }
---             }
---         },
---         {
---             group = "back",
---             components = {
---                 transform = {
---                     position = { x = 250, y = 450 },
---                     scale = { x = 1.0, y = 1.0 },
---                     rotation = 0.0,
---                 },
---                 rigidbody = {
---                     velocity = { x = 0.0, y = 0.0 }
---                 },
---                 sprite = {
---                     texture_asset_id = "truck-texture",
---                     width = 32,
---                     height = 32,
---                     z_index = 2,
---                     fixed = false,
---                     src_rect = { x = 0, y = 0 }
---                 },
---             }
---         }
---     } -- end of entities
--- }
+    entities = {
+        [0] =
+        {
+            tag = "player",
+            components = {
+                transform = {
+                    position = { x = 242, y = 110 },
+                    scale = { x = 1.0, y = 1.0 },
+                    rotation = 0.0, -- degrees
+                },
+                rigidbody = {
+                    velocity = { x = 0.0, y = 0.0 }
+                },
+                sprite = {
+                    texture_asset_id = "chopper-texture",
+                    width = 32,
+                    height = 32,
+                    z_index = 4,
+                    fixed = false,
+                    src_rect = { x = 0, y = 0 }
+                },
+                animation = {
+                    num_frames = 2,
+                    fps = 9,
+                    isLoop = true
+                },
+                keyboard_controller = {
+                    up_vel = { x = 0, y = -180 },
+                    right_vel = { x = 180, y = 0 },
+                    down_vel = { x = 0, y = 180 },
+                    left_vel = { x = -180, y = 0 },
+                },
+                camera_follow = {
+                    follow = true
+                }
+            }
+        },
+        {
+            group = "back",
+            components = {
+                transform = {
+                    position = { x = 250, y = 450 },
+                    scale = { x = 1.0, y = 1.0 },
+                    rotation = 0.0,
+                },
+                rigidbody = {
+                    velocity = { x = 0.0, y = 0.0 }
+                },
+                sprite = {
+                    texture_asset_id = "truck-texture",
+                    width = 32,
+                    height = 32,
+                    z_index = 2,
+                    fixed = false,
+                    src_rect = { x = 0, y = 0 }
+                },
+            }
+        }
+    } -- end of entities
+}
 
 local i = 1
 function update()

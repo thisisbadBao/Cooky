@@ -120,16 +120,16 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
                 );
             }
 
-            // RigidBody
-            // sol::optional<sol::table> rigidbody = entity["components"]["rigidbody"];
-            // if (rigidbody != sol::nullopt) {
-            //     newEntity.AddComponent<RigidBodyComponent>(
-            //         Vec2(
-            //             entity["components"]["rigidbody"]["vel"]["x"].get_or(0.0),
-            //             entity["components"]["rigidbody"]["vel"]["y"].get_or(0.0)
-            //         )
-            //     );
-            // }
+            //RigidBody
+            sol::optional<sol::table> rigidbody = entity["components"]["rigidbody"];
+            if (rigidbody != sol::nullopt) {
+                newEntity.AddComponent<RigidBodyComponent>(
+                    Vec2(
+                        entity["components"]["rigidbody"]["vel"]["x"].get_or(0.0),
+                        entity["components"]["rigidbody"]["vel"]["y"].get_or(0.0)
+                    )
+                );
+            }
 
             // Sprite
             sol::optional<sol::table> sprite = entity["components"]["sprite"];

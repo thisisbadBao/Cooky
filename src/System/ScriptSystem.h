@@ -5,11 +5,13 @@
 
 #include "../ECS/ECS.h"
 #include "../Game/Game.h"
+#include "../Game/ScriptLoader.h"
 #include "../AssetManager/AssetManager.h"
 #include "../Components/ScriptComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/TextLabelComponent.h"
 #include "../Components/RigidBodyComponent.h"
+#include "../System/PhysicsSystem.h"
 #include "../Utils/CookyUtils.h"
 
 void LuaBinding_AddTransform(Entity entity,
@@ -42,6 +44,30 @@ void LuaBinding_AddText(Entity entity,
     entity.AddComponent<TextLabelComponent>(position, text, assetId, color, isFixed);
 }
 
+void LuaBinding_AddPolygon1(Entity entity,
+                            b2BodyDef bodyDef,
+                            float width,
+                            float height,
+                            float friction,
+                            float restitution,
+                            float density) {
+    entity.registry->GetSystem<PhysicsSystem>().AddPolygon(entity, bodyDef, width, height, friction, restitution, density);
+}
+
+void LuaBinding_AddPolygon2(Entity entity,
+                            b2BodyDef bodyDef,
+                            std::vector<Vec2> vertices,
+                            int count,
+                            float friction,
+                            float restitution,
+                            float density) {
+    b2Vec2 points[count];
+    for (int i = 0; i < count; i++) {
+        points[i].Set(vertices[i].x, vertices[i].y);
+    }
+    entity.registry->GetSystem<PhysicsSystem>().AddPolygon(entity, bodyDef, points, count, friction, restitution, density);
+}
+
 void New_Usertype_Vec2(sol::state& lua) {
     lua.new_usertype<Vec2>(
         "Vec2", sol::call_constructor,
@@ -50,6 +76,15 @@ void New_Usertype_Vec2(sol::state& lua) {
         "y", &Vec2::y,
         sol::meta_function::addition, &Vec2::operator+,
         sol::meta_function::subtraction, &Vec2::operator-
+    );
+}
+
+void New_Usertype_b2Vec2(sol::state& lua) {
+    lua.new_usertype<b2Vec2>(
+        "b2Vec2", sol::call_constructor,
+        sol::constructors<b2Vec2(), b2Vec2(float xIn, float yIn)>(),
+        "x", &b2Vec2::x,
+        "y", &b2Vec2::y
     );
 }
 
@@ -118,38 +153,33 @@ void New_Usertype_RigidBody(sol::state& lua) {
     );
 }
 
-// void New_Usertype_BodyDef(sol::state& lua) {
-//     lua.new_usertype<b2BodyDef>(
-//         "BodyDef", sol::call_constructor,
-//         sol::constructors<b2BodyDef()>(),
-//         "position", &b2BodyDef::position,
-//         "angle", &b2BodyDef::angle,
-//         "linearVelocity", &b2BodyDef::linearVelocity,
-//         "angularVelocity", &b2BodyDef::angularVelocity,
-//         "linearDamping", &b2BodyDef::linearDamping,
-//         "angularDamping", &b2BodyDef::angularDamping,
-//         "allowSleep", &b2BodyDef::allowSleep,
-//         "awake", &b2BodyDef::awake,
-//         "fixedRotation", &b2BodyDef::fixedRotation,
-//         "bullet", &b2BodyDef::bullet,
-//         "type", &b2BodyDef::type,
-//         "enabled", &b2BodyDef::enabled,
-//         "gravityScale", &b2BodyDef::gravityScale
-//     );
-// }
+void New_Usertype_BodyDef(sol::state& lua) {
+    lua.new_usertype<b2BodyDef>(
+        "BodyDef", sol::call_constructor,
+        sol::constructors<b2BodyDef()>(),
+        "position", &b2BodyDef::position,
+        "angle", &b2BodyDef::angle,
+        "linearVelocity", &b2BodyDef::linearVelocity,
+        "angularVelocity", &b2BodyDef::angularVelocity,
+        "linearDamping", &b2BodyDef::linearDamping,
+        "angularDamping", &b2BodyDef::angularDamping,
+        "allowSleep", &b2BodyDef::allowSleep,
+        "awake", &b2BodyDef::awake,
+        "fixedRotation", &b2BodyDef::fixedRotation,
+        "bullet", &b2BodyDef::bullet,
+        "type", &b2BodyDef::type,
+        "enabled", &b2BodyDef::enabled,
+        "gravityScale", &b2BodyDef::gravityScale
+    );
+}
 
-// void New_Usertype_FixtureDef(sol::state& lua) {
-//     lua.new_usertype<b2FixtureDef>(
-//         "FixtureDef", sol::call_constructor,
-//         sol::constructors<b2BodyDef()>(),
-//         "shape", &b2FixtureDef::shape,
-//         "friction", &b2FixtureDef::friction,
-//         "restitution", &b2FixtureDef::restitution,
-//         "restitutionThreshold", &b2FixtureDef::restitutionThreshold,
-//         "density", &b2FixtureDef::density,
-//         "isSensor", &b2FixtureDef::isSensor
-//     );
-// }
+void New_Enum_BodyType(sol::state& lua) {
+    lua.new_enum<b2BodyType>("BodyType",{
+        {"static", b2BodyType::b2_staticBody},
+        {"kinematic", b2BodyType::b2_kinematicBody},
+        {"dynamic", b2BodyType::b2_dynamicBody}
+    });
+}
 
 void New_Usertype_Entity(sol::state& lua) {
     lua.new_usertype<Entity>(
@@ -180,7 +210,8 @@ void New_Usertype_Entity(sol::state& lua) {
         "setRigidBody", &Entity::SetComponentOn<RigidBodyComponent>,
         "rmRigidBody", &Entity::RemoveComponent<RigidBodyComponent>,
         "hasRigidBody", &Entity::HasComponent<RigidBodyComponent>,
-        "getRigidBody", &Entity::GetComponent<RigidBodyComponent>
+        "getRigidBody", &Entity::GetComponent<RigidBodyComponent>,
+        "addPolygon", sol::overload(LuaBinding_AddPolygon1, LuaBinding_AddPolygon2)
     );
 }
 
@@ -196,6 +227,7 @@ public:
 
     void CreateLuaBindings(sol::state& lua,std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager) {
         New_Usertype_Entity(lua);
+        New_Usertype_b2Vec2(lua);
         New_Usertype_Vec2(lua);
         New_Usertype_Vec3(lua);
         New_Usertype_Color(lua);
@@ -203,6 +235,9 @@ public:
         New_Usertype_Sprite(lua);
         New_Usertype_Text(lua);
         New_Usertype_RigidBody(lua);
+        New_Usertype_BodyDef(lua);
+
+        New_Enum_BodyType(lua);
 
         lua.set_function("test", Test);
 
@@ -228,15 +263,19 @@ public:
     }
 
     void UpdateScript(sol::state& _lua, std::unique_ptr<Registry>& _registry, std::unique_ptr<AssetManager>& _assetManager) {
-        for (auto script : scriptTobeReload) {
-            Logger::LogT("Reload Script: " + script);
-            Game::ReloadScript(_lua, _registry, _assetManager, script);
-        }
-        scriptTobeReload.clear();
         if (toBeReset) {
             _registry->Reset();
-            toBeReset = false;
+            _registry->GetSystem<PhysicsSystem>().Reset();
             ResetLuaState(_lua, _registry, _assetManager);
+
+            ScriptLoader scriptLoader;
+            for (auto script : scriptTobeReload) {
+                Logger::LogT("Reload Script: " + script);
+                scriptLoader.LoadScript(_lua, _registry, _assetManager, script);
+            }
+            scriptTobeReload.clear();
+
+            toBeReset = false;
         }
     }
 
@@ -253,6 +292,7 @@ public:
 
     void AddScriptTobeReload(const std::string& scriptPath) {
         scriptTobeReload.emplace_back(scriptPath);
+        ResetScript();
     }
 
 private:

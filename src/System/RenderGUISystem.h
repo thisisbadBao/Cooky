@@ -83,7 +83,7 @@ public:
 
         if (ImGui::Begin("Basic Info", NULL, windowFlags)) {
             // FPS Info
-            const int fps_interval = 20;
+            const int fps_interval = 10;
             static int fps_count = 0;
             static double fps_average = 0;
             static int fps_offset = 0;

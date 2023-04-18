@@ -22,7 +22,6 @@
 #include "../System/RenderGUISystem.h"
 #include "../System/ScriptSystem.h"
 #include "../System/PhysicsSystem.h"
-#include "../Game/ScriptLoader.h"
 
 int Game::windowWidth;
 int Game::windowHeight;
@@ -263,14 +262,6 @@ void Game::Destroy() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-}
-
-void Game::ReloadScript(sol::state& _lua, std::unique_ptr<Registry>& _registry,
-    std::unique_ptr<AssetManager>& _assetManager, const std::string& scriptPath) {
-    _registry->Reset();
-    _registry->GetSystem<ScriptSystem>().ResetLuaState(_lua, _registry, _assetManager);
-    ScriptLoader scriptLoader;
-    scriptLoader.LoadScript(_lua, _registry, _assetManager, scriptPath);
 }
 
 void Game::SetFPS(int fps) {

@@ -20,7 +20,8 @@ public:
     PhysicsSystem() {
         RequireComponent<RigidBodyComponent>();
         RequireComponent<TransformComponent>();
-        world = new b2World(b2Vec2(0.0f, 9.81f));
+        RequireComponent<ColliderComponent>();
+        world = std::make_unique<b2World>(b2Vec2(0.0f, 9.81f));
     }
 
     void Update() {
@@ -48,9 +49,7 @@ public:
                     polygon.points[i].Rotate(polygon.center, dRotation);
                 }
             }
-
         }
-
         world->Step(1.0f / 60.0f, 6.0f, 2.0f); // update
     }
 
@@ -80,6 +79,13 @@ public:
         entity.GetComponent<RigidBodyComponent>().isInit = true;
     }
 
+    void Reset() {
+        for (auto body : entityToBody) {
+            world->DestroyBody(body.second);
+        }
+        entityToBody.clear();
+    }
+
     void AddPolygon(Entity entity, b2BodyDef bodyDef, b2Vec2* points, int count, float friction, float restitution, float density) {
         b2FixtureDef fixtureDef;
         fixtureDef.friction = friction;
@@ -107,15 +113,14 @@ public:
         }
 
         Vec2 center = Vec2(body->GetWorldCenter().x, body->GetWorldCenter().y);
-        b2Vec2 pos = entityToBody[entity.GetId()]->GetPosition();
-        Logger::Log("poly center: x:" + std::to_string(center.x) + ", y:" + std::to_string(center.y));
-        Logger::Log("poly pos: x:" + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
+        // b2Vec2 pos = entityToBody[entity.GetId()]->GetPosition();
+        // Logger::Log("poly center: x:" + std::to_string(center.x) + ", y:" + std::to_string(center.y));
+        // Logger::Log("poly pos: x:" + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
         entity.AddComponent<PolygonColliderComponent>(vertices, count, center);
         entity.GetComponent<RigidBodyComponent>().isInit = true;
     }
 
 private:
-    b2World* world;
+    std::unique_ptr<b2World> world;
     std::unordered_map<int, b2Body*> entityToBody;
-
 };
