@@ -1,5 +1,7 @@
 #include "ECS.h"
 
+#include "../System/CallbackEventSystem.h"
+
 int IComponent::nextId = 0;
 
 int Entity::GetId() const {
@@ -24,6 +26,10 @@ void Entity::Group(const std::string &group) {
 
 bool Entity::BelongsToGroup(const std::string &group) const {
     return registry->EntityBelongsToGroup(*this, group);
+}
+
+void Entity::SubscribeEvent(std::string eventName, std::function<void()> func) {
+    registry->GetSystem<CallbackEventSystem>().SubscribeToEvent(registry->entityEventBus, eventName, func);
 }
 
 void System::AddEntityToSystem(Entity entity) {
@@ -208,4 +214,8 @@ void Registry::RemoveEntityGroup(Entity entity) {
 
 int Registry::GetEntityCount() {
     return entityCount;
+}
+
+void Registry::EmitEntityEvent(std::string eventName) {
+    entityEventBus->EmitEvent<CallbackEvent>(eventName);
 }

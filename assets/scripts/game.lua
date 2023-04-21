@@ -46,3 +46,12 @@ circledef.type = BodyType.dynamic
 circledef.linearVelocity = b2Vec2(-4, 3)
 circledef.position = b2Vec2(8, -3)
 circle:addCircle(circledef, 0.5, 0.3, 0.5, 1)
+
+
+jump = function ()
+    print("circle jump")
+end
+
+circle:sub("jump", jump)
+
+emit("jump")

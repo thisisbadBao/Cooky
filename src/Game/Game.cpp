@@ -21,6 +21,9 @@
 #include "../System/RenderGUISystem.h"
 #include "../System/ScriptSystem.h"
 #include "../System/PhysicsSystem.h"
+#include "../System/CallbackEventSystem.h"
+
+#include "../EventBus/Event.h"
 
 int Game::windowWidth;
 int Game::windowHeight;
@@ -142,46 +145,7 @@ void Game::ProcessInput()
         }
 }
 
-
-void Game::TestPhysicsSystem() {
-        for (int i = 0; i < 6; i++) {
-            Entity ett = registry->CreateEntity();
-            ett.AddComponent<RigidBodyComponent>();
-            b2BodyDef body;
-            body.type = b2_dynamicBody;
-            body.position.Set(3, i);
-            registry->GetSystem<PhysicsSystem>().AddPolygon(ett, body, 0.6, 0.6, 0.3f, 0.5f, 1);
-            ett.AddComponent<TransformComponent>();
-        }
-
-        Entity plat = registry->CreateEntity();
-        plat.AddComponent<RigidBodyComponent>();
-        b2BodyDef platbody;
-        platbody.type = b2_staticBody;
-        platbody.position.Set(5, 9);
-        registry->GetSystem<PhysicsSystem>().AddPolygon(plat, platbody, 8, 0.5, 0.3f, 0.5f, 1);
-        plat.AddComponent<TransformComponent>();
-
-        Entity poly = registry->CreateEntity();
-        poly.AddComponent<RigidBodyComponent>();
-        b2BodyDef polygon;
-        polygon.position.Set(8, 6);
-        polygon.type = b2_dynamicBody;
-        polygon.linearVelocity.Set(-1, 0);
-        b2Vec2 points[3] = {{2, 1}, {1, 2}, {3, 4}};
-        registry->GetSystem<PhysicsSystem>().AddPolygon(poly, polygon, points, 3, 0.3f, 1, 1);
-        poly.AddComponent<TransformComponent>();
-
-        Entity circle = registry->CreateEntity();
-        circle.AddComponent<RigidBodyComponent>();
-        b2BodyDef circlebody;
-        circlebody.type = b2_dynamicBody;
-        circlebody.position.Set(5, 3);
-        registry->GetSystem<PhysicsSystem>().AddCircle(circle, circlebody, 1.5f, 0.3f, 0.5f, 1);
-        circle.AddComponent<TransformComponent>();
-}
-
-// Initialize game objects...s
+// Initialize game objects...
 void Game::Setup() {
     // Add systems
     registry->AddSystem<MovementSystem>();
@@ -196,12 +160,16 @@ void Game::Setup() {
     registry->AddSystem<RenderGUISystem>();
     registry->AddSystem<ScriptSystem>();
     registry->AddSystem<PhysicsSystem>();
+    registry->AddSystem<CallbackEventSystem>();
+
+    // Subscribe event
+    // registry->GetSystem<MovementSystem>().SubscribeToEvent(eventBus);
+    // registry->GetSystem<DamageSystem>().SubscribeToEvent(eventBus);
+    // registry->GetSystem<KeyboardControlSystem>().SubscribeToEvent(eventBus);
 
     // Create the Lua binding
     registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager);
     lua.open_libraries(sol::lib::base, sol::lib::math);
-
-    TestPhysicsSystem();
 }
 
 // Update game object
@@ -219,14 +187,10 @@ void Game::Update() {
     millisecsPreviousFrame = SDL_GetTicks(); // millisecond
 
     // Reset all event handlers
-    eventBus->Reset();
+    // eventBus->Reset();
 
     if (isPaused) return;
 
-    // Subcribe event
-    registry->GetSystem<MovementSystem>().SubscribeToEvent(eventBus);
-    registry->GetSystem<DamageSystem>().SubscribeToEvent(eventBus);
-    registry->GetSystem<KeyboardControlSystem>().SubscribeToEvent(eventBus);
 
     // Invoke all the systems that need to update
     registry->GetSystem<MovementSystem>().Update(deltaTime);

@@ -221,7 +221,8 @@ void New_Usertype_Entity(sol::state& lua) {
         "hasRigidBody", &Entity::HasComponent<RigidBodyComponent>,
         "getRigidBody", &Entity::GetComponent<RigidBodyComponent>,
         "addPolygon", sol::overload(LuaBinding_AddPolygon1, LuaBinding_AddPolygon2),
-        "addCircle", LuaBinding_AddCircle
+        "addCircle", LuaBinding_AddCircle,
+        "sub", &Entity::SubscribeEvent
     );
 }
 
@@ -263,6 +264,9 @@ public:
         lua.set_function("addFont", [&assetManager](std::string id, std::string file, int fontSize) {
             assetManager->AddFont(id, file, fontSize);
         });
+
+        lua.set_function("emit", [&registry](std::string eventName) { registry->EmitEntityEvent(eventName); });
+
     }
 
     void Update() {

@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "../Logger/Logger.h"
+#include "../EventBus/EventBus.h"
 
 const unsigned int MAX_COMPONENTS = 32;
 
@@ -58,6 +59,8 @@ public:
     template <typename TComponent> void RemoveComponent();
     template <typename TComponent> bool HasComponent() const;
     template <typename TComponent> TComponent& GetComponent() const;
+
+    void SubscribeEvent(std::string eventName, std::function<void()> func);
 
     class Registry* registry;
 };
@@ -204,7 +207,10 @@ private:
     std::unordered_map<int, std::string> groupPerEntity;
 
 public:
-    Registry() { Logger::LogD("Registry constructor called!"); };
+    Registry() { 
+        Logger::LogD("Registry constructor called!");
+        entityEventBus = std::make_unique<EventBus>();
+    };
     ~Registry() { Logger::LogD("Registry destructor called!"); };
     void Update();
     void Reset();
@@ -243,6 +249,11 @@ public:
 
     // Log info
     int GetEntityCount();
+
+    // Emit entity event
+    void EmitEntityEvent(std::string eventName);
+
+    std::unique_ptr<EventBus> entityEventBus;
 };
 
 // System functions

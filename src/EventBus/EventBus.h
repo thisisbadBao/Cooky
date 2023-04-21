@@ -76,6 +76,8 @@ public:
                 TEvent event(std::forward<TArgs>(args)...);
                 handler->Execute(event);
             }
+        } else {
+            Logger::Err("No event handlers for " + std::string(typeid(TEvent).name()));
         }
     }
 
