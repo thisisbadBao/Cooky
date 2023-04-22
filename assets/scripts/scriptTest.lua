@@ -67,12 +67,6 @@ Def = {
                     fps = 9,
                     isLoop = true
                 },
-                keyboard_controller = {
-                    up_vel = { x = 0, y = -180 },
-                    right_vel = { x = 180, y = 0 },
-                    down_vel = { x = 0, y = 180 },
-                    left_vel = { x = -180, y = 0 },
-                },
                 camera_follow = {
                     follow = true
                 }

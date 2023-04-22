@@ -173,29 +173,6 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
                 newEntity.AddComponent<CameraFollowComponent>();
             }
 
-            // KeyboardControlled
-            sol::optional<sol::table> keyboardControlled = entity["components"]["keyboard_controller"];
-            if (keyboardControlled != sol::nullopt) {
-                newEntity.AddComponent<KeyboardControlComponent>(
-                    Vec2(
-                        entity["components"]["keyboard_controller"]["up_vel"]["x"],
-                        entity["components"]["keyboard_controller"]["up_vel"]["y"]
-                    ),
-                    Vec2(
-                        entity["components"]["keyboard_controller"]["right_vel"]["x"],
-                        entity["components"]["keyboard_controller"]["right_vel"]["y"]
-                    ),
-                    Vec2(
-                        entity["components"]["keyboard_controller"]["down_vel"]["x"],
-                        entity["components"]["keyboard_controller"]["down_vel"]["y"]
-                    ),
-                    Vec2(
-                        entity["components"]["keyboard_controller"]["left_vel"]["x"],
-                        entity["components"]["keyboard_controller"]["left_vel"]["y"]
-                    )
-                );
-            }
-
             // Text
             sol::optional<sol::table> text = entity["components"]["text"];
             if (text != sol::nullopt) {

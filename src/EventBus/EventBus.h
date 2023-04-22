@@ -77,7 +77,7 @@ public:
                 handler->Execute(event);
             }
         } else {
-            Logger::Err("No event handlers for " + std::string(typeid(TEvent).name()));
+            Logger::LogD("No event handlers for " + std::string(typeid(TEvent).name()));
         }
     }
 

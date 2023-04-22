@@ -29,7 +29,7 @@ bool Entity::BelongsToGroup(const std::string &group) const {
 }
 
 void Entity::SubscribeEvent(std::string eventName, std::function<void()> func) {
-    registry->GetSystem<CallbackEventSystem>().SubscribeToEvent(registry->entityEventBus, eventName, func);
+    registry->GetSystem<CallbackEventSystem>().SubscribeToEvent(eventName, func);
 }
 
 void System::AddEntityToSystem(Entity entity) {

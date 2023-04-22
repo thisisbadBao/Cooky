@@ -54,4 +54,16 @@ end
 
 circle:sub("jump", jump)
 
+circle:sub("a_down", function ()
+    print("a down")
+end)
+
+circle:sub("a_up", function ()
+    print("a up")
+end)
+
 emit("jump")
+
+function update()
+    
+end

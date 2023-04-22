@@ -15,7 +15,7 @@
 #include "../System/CollisionSystem.h"
 #include "../System/RenderColliderSystem.h"
 #include "../System/DamageSystem.h"
-#include "../System/KeyboardControlSystem.h"
+#include "../System/KeyboardSystem.h"
 #include "../System/CameraMovementSystem.h"
 #include "../System/RenderTextSystem.h"
 #include "../System/RenderGUISystem.h"
@@ -116,6 +116,8 @@ void Game::ProcessInput()
         io.MouseDown[0] = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
         io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
 
+        registry->GetSystem<KeyboardSystem>().HandleKeyEvent(sdlEvent, registry);
+
         // Handle core SDL event
         switch (sdlEvent.type) {
             case SDL_QUIT:
@@ -128,7 +130,8 @@ void Game::ProcessInput()
                 if (sdlEvent.key.keysym.sym == SDLK_F1) {
                     isDebug = !isDebug;
                 }
-                eventBus->EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
+                break;
+            case SDL_KEYUP:
                 break;
             case SDL_WINDOWEVENT:
                 switch (sdlEvent.window.event) {
@@ -141,8 +144,8 @@ void Game::ProcessInput()
                         break;
                 }
                 break;
-            }
         }
+    }
 }
 
 // Initialize game objects...
@@ -154,7 +157,7 @@ void Game::Setup() {
     registry->AddSystem<CollisionSystem>();
     registry->AddSystem<RenderColliderSystem>();
     registry->AddSystem<DamageSystem>();
-    registry->AddSystem<KeyboardControlSystem>();
+    registry->AddSystem<KeyboardSystem>();
     registry->AddSystem<CameraMovementSystem>();
     registry->AddSystem<RenderTextSystem>();
     registry->AddSystem<RenderGUISystem>();
@@ -165,7 +168,8 @@ void Game::Setup() {
     // Subscribe event
     // registry->GetSystem<MovementSystem>().SubscribeToEvent(eventBus);
     // registry->GetSystem<DamageSystem>().SubscribeToEvent(eventBus);
-    // registry->GetSystem<KeyboardControlSystem>().SubscribeToEvent(eventBus);
+    // registry->GetSystem<KeyboardSystem>().SubscribeToEvent(eventBus);
+    registry->GetSystem<CallbackEventSystem>().Init(registry->entityEventBus);
 
     // Create the Lua binding
     registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager);

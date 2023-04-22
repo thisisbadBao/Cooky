@@ -11,6 +11,7 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/TextLabelComponent.h"
 #include "../Components/RigidBodyComponent.h"
+#include "../System/CallbackEventSystem.h"
 #include "../System/PhysicsSystem.h"
 #include "../Utils/CookyUtils.h"
 
@@ -280,6 +281,7 @@ public:
         if (toBeReset) {
             _registry->Reset();
             _registry->GetSystem<PhysicsSystem>().Reset();
+            _registry->GetSystem<CallbackEventSystem>().Reset();
             ResetLuaState(_lua, _registry, _assetManager);
 
             ScriptLoader scriptLoader;
