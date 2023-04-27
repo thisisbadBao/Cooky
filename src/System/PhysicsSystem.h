@@ -60,7 +60,20 @@ public:
         world->Step(1.0f / 60.0f, 6.0f, 2.0f); // update
     }
 
+    void Reset() {
+        for (auto body : entityToBody) {
+            world->DestroyBody(body.second);
+        }
+        entityToBody.clear();
+    }
+
     void AddPolygon(Entity entity, b2BodyDef bodyDef, float width, float height, float friction, float restitution, float density) {
+        if (entity.HasComponent<TransformComponent>()) {
+            auto transform = entity.GetComponent<TransformComponent>();
+            bodyDef.position.Set(transform.position.x, transform.position.y);
+        } else {
+            entity.AddComponent<TransformComponent>(Vec2(bodyDef.position.x, bodyDef.position.y));
+        }
         b2FixtureDef fixtureDef;
         fixtureDef.friction = friction;
         fixtureDef.restitution = restitution;
@@ -83,17 +96,17 @@ public:
 
         Vec2 center = Vec2(body->GetWorldCenter().x, body->GetWorldCenter().y);
         entity.AddComponent<PolygonColliderComponent>(vertices, 4, center);
+        entity.AddComponent<RigidBodyComponent>();
         entity.GetComponent<RigidBodyComponent>().isInit = true;
     }
 
-    void Reset() {
-        for (auto body : entityToBody) {
-            world->DestroyBody(body.second);
-        }
-        entityToBody.clear();
-    }
-
     void AddPolygon(Entity entity, b2BodyDef bodyDef, b2Vec2* points, int count, float friction, float restitution, float density) {
+        if (entity.HasComponent<TransformComponent>()) {
+            auto transform = entity.GetComponent<TransformComponent>();
+            bodyDef.position.Set(transform.position.x, transform.position.y);
+        } else {
+            entity.AddComponent<TransformComponent>(Vec2(bodyDef.position.x, bodyDef.position.y));
+        }
         b2FixtureDef fixtureDef;
         fixtureDef.friction = friction;
         fixtureDef.restitution = restitution;
@@ -124,10 +137,17 @@ public:
         // Logger::Log("poly center: x:" + std::to_string(center.x) + ", y:" + std::to_string(center.y));
         // Logger::Log("poly pos: x:" + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
         entity.AddComponent<PolygonColliderComponent>(vertices, count, center);
+        entity.AddComponent<RigidBodyComponent>();
         entity.GetComponent<RigidBodyComponent>().isInit = true;
     }
 
     void AddCircle(Entity entity, b2BodyDef bodyDef, float radius, float friction, float restitution, float density) {
+        if (entity.HasComponent<TransformComponent>()) {
+            auto transform = entity.GetComponent<TransformComponent>();
+            bodyDef.position.Set(transform.position.x, transform.position.y);
+        } else {
+            entity.AddComponent<TransformComponent>(Vec2(bodyDef.position.x, bodyDef.position.y));
+        }
         b2FixtureDef fixtureDef;
         fixtureDef.friction = friction;
         fixtureDef.restitution = restitution;
@@ -145,7 +165,51 @@ public:
 
         entity.AddComponent<ColliderComponent>(CShape::CIRCLE);
         entity.AddComponent<CircleColliderComponnet>(center, radius);
+        entity.AddComponent<RigidBodyComponent>();
         entity.GetComponent<RigidBodyComponent>().isInit = true;
+    }
+    bool IsBodyCreated(int entityId) {
+        if (entityToBody.find(entityId) != entityToBody.end()) {
+            return true;
+        }
+        return false;
+    }
+
+    void SetLinearVelocity(int entityId, Vec2 velocity) {
+        if (IsBodyCreated(entityId)) {
+            // Logger::Log("SetLinearVelocity: " + std::to_string(velocity.x) + ", " + std::to_string(velocity.y));
+            entityToBody[entityId]->SetLinearVelocity(b2Vec2(velocity.x, velocity.y));
+        }
+    }
+
+    void SetLinearDamping(int entityId, float linearDamping) {
+        if (IsBodyCreated(entityId)) {
+            entityToBody[entityId]->SetLinearDamping(linearDamping);
+        }
+    }
+
+    void SetAngularVelocity(int entityId, float angularVelocity) {
+        if (IsBodyCreated(entityId)) {
+            entityToBody[entityId]->SetAngularVelocity(angularVelocity);
+        }
+    }
+
+    void SetAngularDamping(int entityId, float angularDamping) {
+        if (IsBodyCreated(entityId)) {
+            entityToBody[entityId]->SetAngularDamping(angularDamping);
+        }
+    }
+
+    void ApplyForceToCenter(int entityId, Vec2 force) {
+        if (IsBodyCreated(entityId)) {
+            entityToBody[entityId]->ApplyForceToCenter(b2Vec2(force.x, force.y), true);
+        }
+    }
+
+    void SetGravityScale(int entityId, float scale) {
+        if (IsBodyCreated(entityId)) {
+            entityToBody[entityId]->SetGravityScale(scale);
+        }
     }
 
 private:

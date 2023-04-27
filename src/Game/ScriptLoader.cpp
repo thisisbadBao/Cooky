@@ -33,7 +33,15 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
         return;
     }
 
-    lua.script_file(scriptPath);
+    auto scriptResult = lua.script_file(scriptPath, [](lua_State*, sol::protected_function_result pfr) {
+        return pfr;
+    });
+
+    if (!scriptResult.valid()) {
+        sol::error err = scriptResult;
+        std::string what = err.what();
+        Logger::Err("Error: " + what);
+    }
 
     sol::optional<sol::function> updateScript = lua["update"];
     if (updateScript != sol::nullopt) {
@@ -207,17 +215,14 @@ void ScriptLoader::LoadScript(sol::state& lua, const std::unique_ptr<Registry>& 
 void ScriptLoader::GetScriptPath(std::string scriptPath, std::vector<std::string>& pathVec) {
     DIR *pDir;
     struct dirent* ptr;
-    if(!(pDir = opendir(scriptPath.c_str())))
-    {
+    if(!(pDir = opendir(scriptPath.c_str()))) {
         Logger::Err("Script folder doesn't Exist!");
         return;
     }
 
-    while((ptr = readdir(pDir))!=0) 
-    {
-        if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0)
-        {
-            pathVec.push_back(scriptPath + "/" + ptr->d_name);
+    while((ptr = readdir(pDir))!=0) {
+        if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0) {
+            pathVec.push_back(ptr->d_name);
     	}
     }
     sort(pathVec.begin(),pathVec.end());

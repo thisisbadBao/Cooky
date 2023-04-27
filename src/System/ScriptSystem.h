@@ -13,13 +13,12 @@
 #include "../Components/RigidBodyComponent.h"
 #include "../System/CallbackEventSystem.h"
 #include "../System/PhysicsSystem.h"
+#include "../System/KeyboardSystem.h"
 #include "../Utils/CookyUtils.h"
 
 void LuaBinding_AddTransform(Entity entity,
-                             Vec2 position = Vec2::Zero,
-                             Vec2 scale = Vec2(1,1),
-                             double rotation = 0.0) {
-    entity.AddComponent<TransformComponent>(position, scale, rotation);
+                             Vec2 position = Vec2::Zero) {
+    entity.AddComponent<TransformComponent>(position, Vec2(1,1), 0);
 }
 
 void LuaBinding_AddSprite(Entity entity,
@@ -76,6 +75,39 @@ void LuaBinding_AddCircle(Entity entity,
                           float restitution,
                           float density) {
     entity.registry->GetSystem<PhysicsSystem>().AddCircle(entity, bodyDef, radius, friction, restitution, density);
+}
+
+void LuaBinding_AddPhysicsFunctions(sol::state& lua, std::unique_ptr<Registry>& registry) {
+    lua.set_function("SetLinearVelocity", [&registry](int entityId, Vec2 velocity) {
+        registry->GetSystem<PhysicsSystem>().SetLinearVelocity(entityId, velocity);
+    });
+
+    lua.set_function("SetLinearDamping", [&registry](int entityId, float linearDamping) {
+        registry->GetSystem<PhysicsSystem>().SetLinearDamping(entityId, linearDamping);
+    });
+
+    lua.set_function("SetAngularVelocity", [&registry](int entityId, float angularVelocity) {
+        registry->GetSystem<PhysicsSystem>().SetAngularVelocity(entityId, angularVelocity);
+    });
+
+    lua.set_function("SetAngularDamping", [&registry](int entityId, float angularDamping) {
+        registry->GetSystem<PhysicsSystem>().SetAngularDamping(entityId, angularDamping);
+    });
+
+    lua.set_function("ApplyForceToCenter", [&registry](int entityId, Vec2 force) {
+        registry->GetSystem<PhysicsSystem>().ApplyForceToCenter(entityId, force);
+    });
+
+    lua.set_function("SetGravityScale", [&registry](int entityId, float scale) {
+        registry->GetSystem<PhysicsSystem>().SetGravityScale(entityId, scale);
+    });
+    
+}
+
+void LuaBinding_AddKeyboardFunctions(sol::state& lua, std::unique_ptr<Registry>& registry) {
+    lua.set_function("IsKeyDown", [&registry](const std::string key) -> bool {
+        return registry->GetSystem<KeyboardSystem>().IsKeyDown(key);
+    });
 }
 
 void New_Usertype_Vec2(sol::state& lua) {
@@ -237,7 +269,7 @@ public:
         RequireComponent<ScriptComponent>();
     }
 
-    void CreateLuaBindings(sol::state& lua,std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager) {
+    void CreateLuaBindings(sol::state& lua, std::unique_ptr<Registry>& registry, std::unique_ptr<AssetManager>& assetManager) {
         New_Usertype_Entity(lua);
         New_Usertype_b2Vec2(lua);
         New_Usertype_Vec2(lua);
@@ -250,6 +282,9 @@ public:
         New_Usertype_BodyDef(lua);
 
         New_Enum_BodyType(lua);
+
+        LuaBinding_AddPhysicsFunctions(lua, registry);
+        LuaBinding_AddKeyboardFunctions(lua, registry);
 
         lua.set_function("test", Test);
 
@@ -267,6 +302,8 @@ public:
         });
 
         lua.set_function("emit", [&registry](std::string eventName) { registry->EmitEntityEvent(eventName); });
+
+        lua.set_function("clog", [](const std::string& msg) { Logger::Log(msg); });
 
     }
 
@@ -298,8 +335,15 @@ public:
     void ResetLuaState(sol::state& _lua, std::unique_ptr<Registry>& _registry, std::unique_ptr<AssetManager>& _assetManager) {
         sol::state newLua;
         _lua = std::move(newLua);
-        _lua.open_libraries(sol::lib::base, sol::lib::math);
+        _lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package, sol::lib::math);
         _registry->GetSystem<ScriptSystem>().CreateLuaBindings(_lua, _registry, _assetManager);
+        _lua.script("package.path = package.path ..';./src/Lua/?.lua'");
+        std::vector<std::string> scriptVec;
+        ScriptLoader::GetScriptPath("./assets/scripts", scriptVec);
+        for (auto script : scriptVec) {
+            std::string packagePath = "package.path = package.path .. ';./assets/scripts/" + script + "/?.lua'";
+            _lua.script(packagePath);
+        }
     }
 
     void ResetScript() {
@@ -307,7 +351,7 @@ public:
     }
 
     void AddScriptTobeReload(const std::string& scriptPath) {
-        scriptTobeReload.emplace_back(scriptPath);
+        scriptTobeReload.emplace_back(scriptPath + "/main.lua");
         ResetScript();
     }
 

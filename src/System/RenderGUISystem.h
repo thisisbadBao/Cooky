@@ -24,6 +24,7 @@ public:
             int width = Game::windowWidth, height = Game::windowHeight;
             ImGui::Text("Window width: %d", width);
             ImGui::Text("Window height: %d", height);
+            ImGui::Separator();
             if (ImGui::Button("Set Full Screen")) {
                 SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
             }
@@ -33,7 +34,7 @@ public:
             if (ImGui::Button("Real Full Screen")) {
                 SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
             }
-
+            ImGui::Separator();
             static int newFPS = 60;
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.2f);
             ImGui::InputInt("input int", &newFPS);
@@ -45,15 +46,15 @@ public:
                 ImGui::GetIO().MousePos.x + camera.x,
                 ImGui::GetIO().MousePos.y + camera.y
             );
-
+            ImGui::Separator();
             std::vector<std::string> scriptVec;
             ScriptLoader::GetScriptPath("./assets/scripts", scriptVec);
             for (auto path : scriptVec) {
                 if (ImGui::Button(path.c_str())) {
-                    registry->GetSystem<ScriptSystem>().AddScriptTobeReload(path);
+                    registry->GetSystem<ScriptSystem>().AddScriptTobeReload("./assets/scripts/" + path);
                 }
             }
-
+            ImGui::Separator();
             if (ImGui::Button("Reset")) {
                 registry->GetSystem<ScriptSystem>().ResetScript();
             }

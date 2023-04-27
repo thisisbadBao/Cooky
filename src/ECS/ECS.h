@@ -376,6 +376,11 @@ template <typename TComponent>
 bool Registry::HasComponent(Entity entity) const {
     const auto componentId = Component<TComponent>::GetId();
     const auto entityId = entity.GetId();
+
+    // If no pool for TComponent
+    if (componentId >= componentPools.size()) {
+        return false;
+    }
     auto componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
     return componentPool->Has(entityId);
 }

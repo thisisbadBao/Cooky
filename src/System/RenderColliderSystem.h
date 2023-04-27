@@ -23,7 +23,7 @@ public:
         for (auto entity : GetSystemEntities()) {
             // auto transform = entity.GetComponent<TransformComponent>();
             const auto collider = entity.GetComponent<ColliderComponent>();
-            Color drawColor = {255, 0, 0, 255};
+            Color drawColor = {67, 160, 71, 255};
 
             if (collider.shape == CShape::POLYGON) {
                 const PolygonColliderComponent poly = entity.GetComponent<PolygonColliderComponent>();

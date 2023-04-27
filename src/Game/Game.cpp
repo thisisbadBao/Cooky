@@ -131,8 +131,6 @@ void Game::ProcessInput()
                     isDebug = !isDebug;
                 }
                 break;
-            case SDL_KEYUP:
-                break;
             case SDL_WINDOWEVENT:
                 switch (sdlEvent.window.event) {
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -173,7 +171,7 @@ void Game::Setup() {
 
     // Create the Lua binding
     registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager);
-    lua.open_libraries(sol::lib::base, sol::lib::math);
+    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package, sol::lib::math);
 }
 
 // Update game object

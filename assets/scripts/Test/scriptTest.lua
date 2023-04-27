@@ -19,7 +19,7 @@ ent:addSprite("tank", 32, 32, 2, false, Vec2(0, 0))
 entity = newEnt()
 
 entity:addSprite("tank", 32, 32, 2, false, Vec2(0, 0))
-entity:addTransform(Vec2(200, 200), Vec2(1, 1), 0)
+entity:addTransform(Vec2(200, 200))
 entity:tag("cooky")
 
 local has = entity:hasTransform()
