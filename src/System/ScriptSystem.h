@@ -106,10 +106,13 @@ void LuaBinding_AddPhysicsFunctions(sol::state& lua, std::unique_ptr<Registry>& 
         registry->GetSystem<PhysicsSystem>().SetSensor(entityId, sensor);
     });
 
-    lua.set_function("OnCollision", [&registry](int entityId, std::function<void(std::string)> callback) {
-        registry->GetSystem<CollisionSystem>().SetCallbackOnCollision(entityId, callback);
+    lua.set_function("OnContact", [&registry](int entityId, std::function<void(std::string)> callback) {
+        registry->GetSystem<CollisionSystem>().SetBeginContactCallback(entityId, callback);
     });
 
+    lua.set_function("EndContact", [&registry](int entityId, std::function<void(std::string)> callback) {
+        registry->GetSystem<CollisionSystem>().SetEndContactCallback(entityId, callback);
+    });
 }
 
 void LuaBinding_AddKeyboardFunctions(sol::state& lua, std::unique_ptr<Registry>& registry) {

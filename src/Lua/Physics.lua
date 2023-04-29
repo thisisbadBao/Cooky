@@ -28,6 +28,10 @@ function rb:SetSensor(entity, sensor)
     SetSensor(entity:getId(), sensor)
 end
 
-function rb:OnCollision(entity, callback)
-    OnCollision(entity:getId(), callback)
+function rb:OnContact(entity, callback)
+    OnContact(entity:getId(), callback)
+end
+
+function rb:EndContact(entity, callback)
+    EndContact(entity:getId(), callback)
 end

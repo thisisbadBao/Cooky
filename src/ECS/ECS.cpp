@@ -130,7 +130,7 @@ Entity Registry::CreateEntity() {
 
 void Registry::KillEntity(Entity entity) {
     entitiesToBeKilled.insert(entity);
-    Logger::LogT("Entity " + std::to_string(entity.GetId()) + " was killed");
+    Logger::LogD("Entity " + std::to_string(entity.GetId()) + " was killed");
 }
 
 void Registry::AddEntityToSystem(Entity entity) {

@@ -7,5 +7,13 @@ class CollisionEvent : public Event {
 public:
     Entity a;
     Entity b;
-    CollisionEvent(Entity a, Entity b): a(a), b(b) {}
+    bool beginContact;
+    Vec2* points;
+    int pointCount;
+    CollisionEvent(Entity a, Entity b, bool beginContact, Vec2* points, int pointCount)
+    : a(a),
+      b(b),
+      beginContact(beginContact),
+      points(points),
+      pointCount(pointCount) {}
 };

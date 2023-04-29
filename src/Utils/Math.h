@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <string>
 
 struct Vec2 {
     float x;
@@ -27,6 +28,8 @@ struct Vec2 {
     void Set(float x, float y);
 
     void Rotate(Vec2 center, float angle);
+
+    std::string ToString();
 
     static const Vec2 Zero;
 

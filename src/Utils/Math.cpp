@@ -53,6 +53,10 @@ void Vec2::Rotate(Vec2 center, float angle) {
     y = xtemp * s + ytemp * c + center.y;
 }
 
+std::string Vec2::ToString() {
+    return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+}
+
 const Vec3 Vec3::Zero(0, 0, 0);
 
 Vec3& Vec3::operator=(const Vec3& other) {
