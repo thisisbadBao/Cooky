@@ -44,7 +44,7 @@ void LuaBinding_AddText(Entity entity,
     entity.AddComponent<TextLabelComponent>(position, text, assetId, color, isFixed);
 }
 
-void LuaBinding_AddPolygon1(Entity entity,
+void LuaBinding_AddPolygon1(Entity& entity,
                             b2BodyDef bodyDef,
                             float width,
                             float height,
@@ -54,7 +54,7 @@ void LuaBinding_AddPolygon1(Entity entity,
     entity.registry->GetSystem<PhysicsSystem>().AddPolygon(entity, bodyDef, width, height, friction, restitution, density);
 }
 
-void LuaBinding_AddPolygon2(Entity entity,
+void LuaBinding_AddPolygon2(Entity& entity,
                             b2BodyDef bodyDef,
                             std::vector<Vec2> vertices,
                             int count,
@@ -68,7 +68,7 @@ void LuaBinding_AddPolygon2(Entity entity,
     entity.registry->GetSystem<PhysicsSystem>().AddPolygon(entity, bodyDef, points, count, friction, restitution, density);
 }
 
-void LuaBinding_AddCircle(Entity entity,
+void LuaBinding_AddCircle(Entity& entity,
                           b2BodyDef bodyDef,
                           float radius,
                           float friction,
@@ -101,7 +101,15 @@ void LuaBinding_AddPhysicsFunctions(sol::state& lua, std::unique_ptr<Registry>& 
     lua.set_function("SetGravityScale", [&registry](int entityId, float scale) {
         registry->GetSystem<PhysicsSystem>().SetGravityScale(entityId, scale);
     });
-    
+
+    lua.set_function("SetSensor", [&registry](int entityId, bool sensor) {
+        registry->GetSystem<PhysicsSystem>().SetSensor(entityId, sensor);
+    });
+
+    lua.set_function("OnCollision", [&registry](int entityId, std::function<void(std::string)> callback) {
+        registry->GetSystem<CollisionSystem>().SetCallbackOnCollision(entityId, callback);
+    });
+
 }
 
 void LuaBinding_AddKeyboardFunctions(sol::state& lua, std::unique_ptr<Registry>& registry) {
@@ -319,6 +327,7 @@ public:
             _registry->Reset();
             _registry->GetSystem<PhysicsSystem>().Reset();
             _registry->GetSystem<CallbackEventSystem>().Reset();
+            _registry->GetSystem<CollisionSystem>().Reset();
             ResetLuaState(_lua, _registry, _assetManager);
 
             ScriptLoader scriptLoader;

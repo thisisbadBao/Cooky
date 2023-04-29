@@ -9,6 +9,7 @@ SRC_FILES = ./src/*.cpp \
 			./src/ECS/*.cpp \
 			./src/AssetManager/*.cpp \
 			./src/Utils/*.cpp \
+			./src/Physics/*.cpp \
 			./libs/imgui/*.cpp
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -llua -lbox2d
 OBJ_NAME = Cooky

@@ -1,6 +1,7 @@
 #include "ECS.h"
 
 #include "../System/CallbackEventSystem.h"
+#include "../System/PhysicsSystem.h"
 
 int IComponent::nextId = 0;
 
@@ -26,6 +27,10 @@ void Entity::Group(const std::string &group) {
 
 bool Entity::BelongsToGroup(const std::string &group) const {
     return registry->EntityBelongsToGroup(*this, group);
+}
+
+std::string Entity::GetTag() const {
+    return registry->GetTag(*this);
 }
 
 void Entity::SubscribeEvent(std::string eventName, std::function<void()> func) {
@@ -71,7 +76,7 @@ void Registry::Update() {
                 pool->RemoveEntityFromPool(entity.GetId());
             }
         }
-
+        GetSystem<PhysicsSystem>().RemoveBody(entity);
         freeIds.push_back(entity.GetId());
         RemoveEntityTag(entity);
         RemoveEntityGroup(entity);
@@ -175,6 +180,14 @@ void Registry::RemoveEntityTag(Entity entity) {
         entityPerTag.erase(tag);
         tagPerEntity.erase(taggedEntity);
     }
+}
+
+std::string Registry::GetTag(Entity entity) const {
+    if (tagPerEntity.find(entity.GetId()) != tagPerEntity.end()) {
+        return tagPerEntity.at(entity.GetId());
+    }
+    std::string defaultTag = "default_tag";
+    return defaultTag;
 }
 
 void Registry::GroupEntity(Entity entity, const std::string &group) {

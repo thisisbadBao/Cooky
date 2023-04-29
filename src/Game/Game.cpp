@@ -168,6 +168,7 @@ void Game::Setup() {
     // registry->GetSystem<DamageSystem>().SubscribeToEvent(eventBus);
     // registry->GetSystem<KeyboardSystem>().SubscribeToEvent(eventBus);
     registry->GetSystem<CallbackEventSystem>().Init(registry->entityEventBus);
+    registry->GetSystem<CollisionSystem>().Init(registry->entityEventBus);
 
     // Create the Lua binding
     registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager);

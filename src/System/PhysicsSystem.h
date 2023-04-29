@@ -12,6 +12,7 @@
 #include "../Components/CircleColliderComponnet.h"
 #include "../Components/ColliderComponent.h"
 #include "../Components/TransformComponent.h"
+#include "../Physics/ContactListener.h"
 
 const int SCALED_WIDTH = 1200 / MET2PIX;  // 15
 const int SCALED_HEIGHT = 900 / MET2PIX;  // 11.25
@@ -23,10 +24,11 @@ public:
         RequireComponent<TransformComponent>();
         RequireComponent<ColliderComponent>();
         world = std::make_unique<b2World>(b2Vec2(0.0f, 9.81f));
+        contactListener = std::make_shared<ContactListener>();
+        world->SetContactListener(contactListener.get());
     }
 
     void Update() {
-        world->DebugDraw();
         for (auto entity : GetSystemEntities())
         {
             auto rb = entity.GetComponent<RigidBodyComponent>();
@@ -67,7 +69,15 @@ public:
         entityToBody.clear();
     }
 
-    void AddPolygon(Entity entity, b2BodyDef bodyDef, float width, float height, float friction, float restitution, float density) {
+    void RemoveBody(Entity entity) {
+        int entityId = entity.GetId();
+        if (entityToBody.find(entityId) != entityToBody.end()) {
+            world->DestroyBody(entityToBody[entityId]);
+            entityToBody.erase(entityId);
+        }
+    }
+
+    void AddPolygon(Entity& entity, b2BodyDef bodyDef, float width, float height, float friction, float restitution, float density) {
         if (entity.HasComponent<TransformComponent>()) {
             auto transform = entity.GetComponent<TransformComponent>();
             bodyDef.position.Set(transform.position.x, transform.position.y);
@@ -87,20 +97,22 @@ public:
         body = world->CreateBody(&bodyDef);
         body->CreateFixture(&fixtureDef);
         entityToBody.emplace(entity.GetId(), body);
-        entity.AddComponent<ColliderComponent>(CShape::POLYGON);
         std::vector<Vec2> vertices(4);
         for (int i = 0; i < 4; i++) {
             vertices[i] = Vec2(boxShape.m_vertices[i].x + bodyDef.position.x,
                 boxShape.m_vertices[i].y + bodyDef.position.y);
         }
 
+        body->GetUserData().pointer = (uintptr_t)&entity;
+
         Vec2 center = Vec2(body->GetWorldCenter().x, body->GetWorldCenter().y);
+        entity.AddComponent<ColliderComponent>(CShape::POLYGON);
         entity.AddComponent<PolygonColliderComponent>(vertices, 4, center);
         entity.AddComponent<RigidBodyComponent>();
         entity.GetComponent<RigidBodyComponent>().isInit = true;
     }
 
-    void AddPolygon(Entity entity, b2BodyDef bodyDef, b2Vec2* points, int count, float friction, float restitution, float density) {
+    void AddPolygon(Entity& entity, b2BodyDef bodyDef, b2Vec2* points, int count, float friction, float restitution, float density) {
         if (entity.HasComponent<TransformComponent>()) {
             auto transform = entity.GetComponent<TransformComponent>();
             bodyDef.position.Set(transform.position.x, transform.position.y);
@@ -125,23 +137,23 @@ public:
         body->CreateFixture(&fixtureDef);
         entityToBody.emplace(entity.GetId(), body);
 
-        entity.AddComponent<ColliderComponent>(CShape::POLYGON);
         std::vector<Vec2> vertices(count);
         for (int i = 0; i < count; i++) {
             vertices[i] = Vec2(polygon.m_vertices[i].x + bodyDef.position.x,
                 polygon.m_vertices[i].y + bodyDef.position.y);
         }
-
+        body->GetUserData().pointer = (uintptr_t)&entity;
         Vec2 center = Vec2(body->GetWorldCenter().x, body->GetWorldCenter().y);
         // b2Vec2 pos = entityToBody[entity.GetId()]->GetPosition();
         // Logger::Log("poly center: x:" + std::to_string(center.x) + ", y:" + std::to_string(center.y));
         // Logger::Log("poly pos: x:" + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
+        entity.AddComponent<ColliderComponent>(CShape::POLYGON);
         entity.AddComponent<PolygonColliderComponent>(vertices, count, center);
         entity.AddComponent<RigidBodyComponent>();
         entity.GetComponent<RigidBodyComponent>().isInit = true;
     }
 
-    void AddCircle(Entity entity, b2BodyDef bodyDef, float radius, float friction, float restitution, float density) {
+    void AddCircle(Entity& entity, b2BodyDef bodyDef, float radius, float friction, float restitution, float density) {
         if (entity.HasComponent<TransformComponent>()) {
             auto transform = entity.GetComponent<TransformComponent>();
             bodyDef.position.Set(transform.position.x, transform.position.y);
@@ -163,6 +175,7 @@ public:
         body->CreateFixture(&fixtureDef);
         entityToBody.emplace(entity.GetId(), body);
 
+        body->GetUserData().pointer = (uintptr_t)&entity;
         entity.AddComponent<ColliderComponent>(CShape::CIRCLE);
         entity.AddComponent<CircleColliderComponnet>(center, radius);
         entity.AddComponent<RigidBodyComponent>();
@@ -212,7 +225,16 @@ public:
         }
     }
 
+    void SetSensor(int entityId, bool sensor) {
+        if (IsBodyCreated(entityId)) {
+            b2Body* body = entityToBody[entityId];
+            b2Fixture* fixtureList = body->GetFixtureList();
+            fixtureList[0].SetSensor(sensor);
+        }
+    }
+
 private:
     std::unique_ptr<b2World> world;
+    std::shared_ptr<ContactListener> contactListener;
     std::unordered_map<int, b2Body*> entityToBody;
 };

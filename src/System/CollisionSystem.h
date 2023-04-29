@@ -60,4 +60,42 @@ public:
             aY + aH > bY
         );
     }
+
+    void Init(const std::unique_ptr<EventBus>& eventBus) {
+        eventBus->SubscribeToEvent<CollisionEvent>(this, &CollisionSystem::OnCollision);
+    }
+
+    void OnCollision(CollisionEvent& event) {
+        int idA = event.a.GetId();
+        int idB = event.b.GetId();
+        for (auto callbackList : collisionCallbacks) {
+            if (callbackList.first == idA) {
+                for (auto& callback : callbackList.second) {
+                    callback(event.b.GetTag());
+                }
+            }
+            if (callbackList.first == idB) {
+                for (auto& callback : callbackList.second) {
+                    callback(event.a.GetTag());
+                }
+            }
+        }
+    }
+
+    void SetCallbackOnCollision(int entityId, std::function<void(std::string)> callback) {
+        if (collisionCallbacks.find(entityId) != collisionCallbacks.end()) {
+            collisionCallbacks[entityId].emplace_back(callback);
+        } else {
+            std::vector<std::function<void(std::string)>> callbacks;
+            callbacks.emplace_back(callback);
+            collisionCallbacks.emplace(entityId, callbacks);
+        }
+    }
+
+    void Reset() {
+        collisionCallbacks.clear();
+    }
+
+private:
+    std::map<int, std::vector<std::function<void(std::string)>>> collisionCallbacks;
 };

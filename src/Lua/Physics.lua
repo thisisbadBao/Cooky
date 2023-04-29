@@ -23,3 +23,11 @@ end
 function rb:SetGravityScale(entity, scale)
     SetGravityScale(entity:getId(), scale)
 end
+
+function rb:SetSensor(entity, sensor)
+    SetSensor(entity:getId(), sensor)
+end
+
+function rb:OnCollision(entity, callback)
+    OnCollision(entity:getId(), callback)
+end

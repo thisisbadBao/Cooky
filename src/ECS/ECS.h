@@ -47,6 +47,7 @@ public:
     bool HasTag(const std::string &tag) const;
     void Group(const std::string &group);
     bool BelongsToGroup(const std::string &group) const;
+    std::string GetTag() const;
 
     Entity& operator=(const Entity& other) = default;
     bool operator==(const Entity& other) const { return other.GetId() == id; }
@@ -240,6 +241,7 @@ public:
     bool EntityHasTag(Entity entity, const std::string &tag) const;
     Entity GetEntityByTag(const std::string &tag) const;
     void RemoveEntityTag(Entity entity);
+    std::string GetTag(Entity entity) const;
 
     // Group management
     void GroupEntity(Entity entity, const std::string &group);
