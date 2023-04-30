@@ -121,6 +121,32 @@ void LuaBinding_AddKeyboardFunctions(sol::state& lua, std::unique_ptr<Registry>&
     });
 }
 
+void LuaBinding_AddAudioFunctions(sol::state& lua, std::unique_ptr<AssetManager>& assetManager) {
+    lua.set_function("AddSoundEffect", [&assetManager](const std::string &audioName, const std::string &fileName) {
+        assetManager->AddSoundEffect(audioName, fileName);
+    });
+
+    lua.set_function("AddSoundStream", [&assetManager](const std::string &audioName, const std::string &fileName) {
+        assetManager->AddSoundStream(audioName, fileName);
+    });
+
+    lua.set_function("PlaySoundEffect", [&assetManager](const std::string &audioName, float volume) {
+        assetManager->Play(audioName, volume);
+    });
+
+    lua.set_function("PlayStream", [&assetManager](const std::string &audioName, float volume) {
+        assetManager->PlayStream(audioName, volume);
+    });
+
+    lua.set_function("StopSoundEffect", [&assetManager](const std::string &audioName) {
+        assetManager->Stop(audioName);
+    });
+
+    lua.set_function("StopStream", [&assetManager](const std::string &audioName) {
+        assetManager->StopStream(audioName);
+    });
+}
+
 void New_Usertype_Vec2(sol::state& lua) {
     lua.new_usertype<Vec2>(
         "Vec2", sol::call_constructor,
@@ -296,6 +322,7 @@ public:
 
         LuaBinding_AddPhysicsFunctions(lua, registry);
         LuaBinding_AddKeyboardFunctions(lua, registry);
+        LuaBinding_AddAudioFunctions(lua, assetManager);
 
         lua.set_function("test", Test);
 
@@ -331,6 +358,7 @@ public:
             _registry->GetSystem<PhysicsSystem>().Reset();
             _registry->GetSystem<CallbackEventSystem>().Reset();
             _registry->GetSystem<CollisionSystem>().Reset();
+            _assetManager->ClearAssets();
             ResetLuaState(_lua, _registry, _assetManager);
 
             ScriptLoader scriptLoader;

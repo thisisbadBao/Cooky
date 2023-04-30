@@ -2,8 +2,6 @@
 
 #include <SDL2/SDL.h>
 #include <sol/sol.hpp>
-#include "soloud.h"
-#include "soloud_wav.h"
 
 #include "../ECS/ECS.h"
 #include "../AssetManager/AssetManager.h"
@@ -20,13 +18,11 @@ private:
     SDL_Renderer* renderer;
     SDL_Rect camera;
     sol::state lua;
-    SoLoud::Wav gWave;
 
     std::unique_ptr<Registry> registry;
     std::unique_ptr<AssetManager> assetManager;
     std::unique_ptr<EventBus> eventBus;
     std::unique_ptr<DebugDraw> debugDraw;
-    std::unique_ptr<SoLoud::Soloud> gSoloud;
 
 public:
     Game();

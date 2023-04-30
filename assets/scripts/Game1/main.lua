@@ -1,5 +1,6 @@
 require("Physics")
 require("Keyboard")
+require("Sound")
 
 boxHeight = 8
 boxWidth = 6
@@ -51,8 +52,12 @@ for i = 1, 1 do
         brickDef.type = BodyType.static
         bricks[i][j]:addPolygon(brickDef, brickWidth, brickHeight, 0.3, 1, 1)
         rb:OnContact(bricks[i][j], function(tag)
-            bricksCount = bricksCount - 1
-            bricks[i][j]:kill()
+            if tag == "ball" then
+                bricksCount = bricksCount - 1
+                bricks[i][j]:kill()
+                sound:Play("sfx_box")
+            end
+
         end)
         bricksCount = bricksCount + 1
     end
@@ -72,6 +77,17 @@ end)
 
 player:sub("d_up", function ()
     rb:SetLinearVelocity(player, Vec2(0,0))
+end)
+
+sound:AddSFX("sfx_ball", "./assets/sounds/select.wav")
+sound:AddSFX("sfx_box", "./assets/sounds/switch.wav")
+sound:AddStream("bgm", "./assets/sounds/affection.wav")
+sound:PlayStream("bgm")
+
+rb:OnContact(player, function (tag)
+    if tag == "ball" then
+        sound:Play("sfx_ball")
+    end
 end)
 
 ball = newEnt()
