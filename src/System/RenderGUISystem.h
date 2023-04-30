@@ -17,7 +17,7 @@ class RenderGUISystem: public System {
 public:
     RenderGUISystem() = default;
 
-    void Update(std::unique_ptr<Registry>& registry, SDL_Rect camera, SDL_Window* window, double dt) {
+    void Update(std::unique_ptr<Registry>& registry, SDL_Rect camera, SDL_Window* window, double dt, std::unique_ptr<SoLoud::Soloud>& gSoloud) {
         ImGui::NewFrame();
         if (ImGui::Begin("Debug Window")) {
             ImGui::Text("Set window size");
@@ -74,6 +74,15 @@ public:
             if (showImGuiDemo) {
                 ImGui::ShowDemoWindow();
             }
+            ImGui::PlotLines("Visualization", gSoloud->getWave(), 256);
+            if (ImGui::Button("Play")) {
+                SoLoud::Wav gWave;
+                gWave.load("./assets/sounds/d_att.wav");
+                gWave.setLooping(true);
+                int res = gSoloud->play(gWave);
+                Logger::Log(std::to_string(res));
+            }
+                
         }
         ImGui::End();
 

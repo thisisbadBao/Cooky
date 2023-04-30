@@ -41,6 +41,7 @@ Game::Game() {
     assetManager = std::make_unique<AssetManager>();
     eventBus = std::make_unique<EventBus>();
     debugDraw = std::make_unique<DebugDraw>();
+    gSoloud = std::make_unique<SoLoud::Soloud>();
     Logger::LogD("Game constructor called!");
 }
 
@@ -57,6 +58,11 @@ void Game::Initialize() {
         Logger::Err("Error initializing SDL TTF.");
         return;
     }
+
+    int res = gSoloud->init();
+    Logger::Log(std::to_string(res));
+    gSoloud->setVisualizationEnable(true);
+
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
 
@@ -173,6 +179,11 @@ void Game::Setup() {
     // Create the Lua binding
     registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua, registry, assetManager);
     lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package, sol::lib::math);
+
+    int res = gWave.load("./assets/sounds/affection.wav");
+    Logger::Log(std::to_string(res));
+    gWave.setLooping(1);
+    gSoloud->play(gWave);
 }
 
 // Update game object
@@ -216,7 +227,7 @@ void Game::Render() {
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetManager, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(debugDraw, camera);
-        registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, deltaTime);
+        registry->GetSystem<RenderGUISystem>().Update(registry, camera, window, deltaTime, gSoloud);
     }
     SDL_RenderPresent(renderer); // Swap the buffer
 
@@ -233,6 +244,7 @@ void Game::Run() {
 }
 
 void Game::Destroy() {
+    gSoloud->deinit();
     ImGuiSDL::Deinitialize();
     ImGui::DestroyContext();
     SDL_DestroyRenderer(renderer);
